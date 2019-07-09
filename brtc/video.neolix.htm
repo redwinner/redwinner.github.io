@@ -111,40 +111,9 @@ function openVideo(videoID){
         // else{//一个房间号
         //     openVideo(roomID);
         // }
-        openVideo(roomID);
+        setTimeout(function() {openVideo(roomID);}, 2000);
+        
 
-
-
-        function openBackVideo(videoID){
-            console.error(videoID);
-            BRTC_Start2({
-                server: "wss://rtc.exp.bcelive.com:8989/janus",
-                appid: "app-jdhsewp19yg3j4pu",
-                token: "0045b0bdff79b7b3874fe61f0316f2f76a9446dd1a475c664d50ae5432581fcfe2c9c3011d515507391219c0629530000000000",
-                roomname: videoID,
-                videocodec: "h264",
-                userid: "100" + Math.floor(Math.random() * 10000).toString(),
-                displayname: "brtc webclient",
-                feedid: 1000,
-                // localvideoviewid: "herevideo",//本地视频视图ID
-                remotevideoviewid: "therevideo2",//远程视频视图ID
-                aspublisher: false,
-                success: function () {
-                    console.error('请求后视成功！');
-
-                    var s = $('#start');
-                    s.click(function () {
-                        s.attr('disabled', true);
-                        BRTC_Stop();
-                        s.html('打开后视');
-                    });
-                },
-                error: function (e) {
-                    console.error('请求后视出错了');
-                    console.error(e);
-                    $('#start').removeAttr('disabled');
-                }
-            });
         }
 
 
