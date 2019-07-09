@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Baidu-RTC</title>
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/3.1.5/adapter.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.2/js/bootstrap.min.js"></script>
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.1.0/bootbox.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"></script>
+    <script type="text/javascript" src="baidu.rtc.sdk.js"></script>
+    <!--<script type="text/javascript" src="js.cookie.js"></script>-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/cerulean/bootstrap.min.css"
+          type="text/css"/>
+    <!--<link rel="stylesheet" href="css/demo.css" type="text/css"/>-->
+    <!--<link rel="stylesheet" href="css/main.css" type="text/css"/>-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.2/css/font-awesome.min.css"/>
+    <style>
+        html,body{
+            width: 100%;
+            height: 100%;
+        }
+        .container{
+            padding: 0!important;
+            height: 100%;
+            width: 100%!important;
+        }
+        .flo{
+            width: 100px;
+            height: 35px;
+            line-height: 35px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            /*background: rgba(0,0,0,.5);*/
+            position: fixed;
+            z-index: 11;
+            top: 10px;
+            left: 50%;
+            margin-left: -50px;
+            text-align: center;
+        }
+        img{vertical-align: top}
+        .spinner{top: 100px;}
+    </style>
+</head>
+<body>
+
+<script>
+
+function openVideo(videoID){
+            BRTC_Start({
+                server: "wss://rtc.exp.bcelive.com:8989/janus",
+                appid: "app-jdhsewp19yg3j4pu",
+                token: "0045b0bdff79b7b3874fe61f0316f2f76a9446dd1a475c664d50ae5432581fcfe2c9c3011d515507391219c0629530000000000",
+                roomname: videoID,
+                videocodec: "h264",
+                // videocodec: "vp9",
+                userid: "100" + Math.floor(Math.random() * 10000).toString(),
+                displayname: "brtc webclient",
+                feedid: 1000,
+                // localvideoviewid: "herevideo",//本地视频视图ID
+                remotevideoviewid: "therevideo",//远程视频视图ID
+                aspublisher: false,
+                success: function () {
+                    console.error('请求成功！');
+
+                    var num = videoID.split('_')[1];
+                    var dom = $('.flo');
+
+                    switch(num) {
+                        case 'front':
+                            dom.text('前视');
+                            break;
+                        case 'back':
+                            dom.text('后视');
+                            break;
+                        case 'left':
+                            dom.text('左视');
+                            break;
+                        case 'right':
+                            dom.text('右视');
+                            break;
+                        default:
+                            dom.text('无法识别=>' + num);
+                    }
+                },
+                error: function (e) {
+                    console.error('请求出错了');
+                    console.error(e);
+                }
+            });
+        }
+
+    $(document).ready(function () {
+        var roomID = location.search.split('?')[1];//获取房间号
+        // var roomID = 'LHT4B2A15KC5JA002_front';
+        // var roomID = 'LHT4B2A21KB43A016';
+
+        // if (roomID.indexOf('&') !== -1) {//2个房间号
+        //     openVideo(roomID.split('&')[0]);
+        //     openBackVideo(roomID.split('&')[1]);
+        // }
+        // else{//一个房间号
+        //     openVideo(roomID);
+        // }
+        openVideo(roomID);
+
+
+
+        function openBackVideo(videoID){
+            console.error(videoID);
+            BRTC_Start2({
+                server: "wss://rtc.exp.bcelive.com:8989/janus",
+                appid: "app-jdhsewp19yg3j4pu",
+                token: "0045b0bdff79b7b3874fe61f0316f2f76a9446dd1a475c664d50ae5432581fcfe2c9c3011d515507391219c0629530000000000",
+                roomname: videoID,
+                videocodec: "h264",
+                userid: "100" + Math.floor(Math.random() * 10000).toString(),
+                displayname: "brtc webclient",
+                feedid: 1000,
+                // localvideoviewid: "herevideo",//本地视频视图ID
+                remotevideoviewid: "therevideo2",//远程视频视图ID
+                aspublisher: false,
+                success: function () {
+                    console.error('请求后视成功！');
+
+                    var s = $('#start');
+                    s.click(function () {
+                        s.attr('disabled', true);
+                        BRTC_Stop();
+                        s.html('打开后视');
+                    });
+                },
+                error: function (e) {
+                    console.error('请求后视出错了');
+                    console.error(e);
+                    $('#start').removeAttr('disabled');
+                }
+            });
+        }
+
+
+    });
+</script>
+
+<div style="width: 100%;">
+    <img src="1.png" width="100%" height="70">
+    <div class="flo">X视</div>
+</div>
+<!--<button class="button big blue" autocomplete="off" id="start" style="width:300px">关闭后视</button>-->
+
+<div style="width: 100%;height: 100%; position: absolute; top: 0; left: 0;" id="therevideo"></div>
+<!--<div style="width: 100%;height: 100%;" id="therevideo2"></div>-->
+
+</body>
+</html>

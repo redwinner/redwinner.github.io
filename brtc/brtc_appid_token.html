@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Baidu-RTC</title>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/3.1.5/adapter.min.js" ></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.2/jquery.min.js" ></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js" ></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.2/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.1.0/bootbox.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"></script>
+<script type="text/javascript" src="baidu.rtc.sdk.js" ></script>
+<script type="text/javascript" src="js.cookie.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/cerulean/bootstrap.min.css" type="text/css"/>
+<link rel="stylesheet" href="css/demo.css" type="text/css"/>
+<link rel="stylesheet" href="css/main.css" type="text/css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.2/css/font-awesome.min.css"/>
+</head>
+<body>
+
+<script >
+
+$(document).ready(function() {
+	$('#roomname').attr("value",Cookies.get("roomname_at_aapid_page"));
+	$('#appid').attr("value",Cookies.get("appid"));
+	$('#userid').attr("value",Cookies.get("userid"));
+	$('#token').attr("value",Cookies.get("token"));
+
+	$('#start').click(function() {
+			var input_roomname = $('#roomname').val();
+			var input_appid = $('#appid').val();
+			var input_userid = $('#userid').val();
+			var input_token = $('#token').val();
+			$(this).attr('disabled', true).unbind('click');
+			BRTC_Start({
+				server: "wss://rtc.exp.bcelive.com:8989/janus",
+				appid: input_appid, 
+				token: input_token,
+				roomname: input_roomname,
+				videocodec: "h264",
+				userid: input_userid,
+				displayname: "brtc webclient",
+				feedid: 1000,
+				remotevideoviewid: "therevideo",
+				localvideoviewid: "herevideo",
+				aspublisher: true,
+				showvideobps: true,
+				remotevideoon: function(idx) {
+					console.log("remotevideoon, index:"+ idx);
+				},
+				remotevideooff: function(idx) {
+					console.log("remotevideooff, index:"+ idx);
+				},
+				success: function() {
+					$('#start').removeAttr('disabled').html("退出")
+						.click(function() {
+							$('#start').attr('disabled', true);
+							BRTC_Stop();
+						});
+				},
+				error: function() {
+					$('#start').removeAttr('disabled');
+				},
+			});
+			Cookies.set("roomname_at_aapid_page",input_roomname);
+			Cookies.set("appid",input_appid);
+			Cookies.set("userid",input_userid);
+			Cookies.set("token",input_token);
+		});
+	});
+</script>
+
+<div class="container" >
+		<div class="col-md-12" style="text-align: center">
+			<img src="img/rtc_logo.png" id="rtc_logo_img"/>
+			<div >
+				<div class = "rtc_title_font_color" >欢迎来到百度云RTC
+
+				</div>
+			</div>
+
+			<div id="details">
+				<div class="row" >
+					<div class="col-md-12" >
+						<div >
+							<div >
+								<div class="rtc_font_color" >请输入房间号/用户ID/APPID/TOKEN</div>
+							</div>
+							<input autocomplete="off" class="rtc_input_line" autocomplete="off" type="text" placeholder="set room id" id="roomname" size="40" value="8888"></input><br>
+							<input autocomplete="off" class="rtc_input_line" autocomplete="off" type="text" placeholder="set user id" id="userid" size="40" value="10086"></input><br>
+							<input autocomplete="off" class="rtc_input_line" autocomplete="off" type="text" placeholder="set app id" id="appid" size="40" value="appid"></input><br>
+							<input autocomplete="off" class="rtc_input_line" autocomplete="off" type="text" placeholder="token" id="token" size="80" value="token"></input>
+					</div>
+					</div>
+				</div>
+			</div>
+			<button class="button big blue" autocomplete="off" id="start" style="width:300px">进入房间</button>
+			<div class="m-netcall hide" id="videos">
+				<div class="row">
+					<div class="col-md-4">
+							<div class="m-netcall-video" id="herevideo"></div>
+					</div>
+					<div class="col-md-4">
+
+					</div>
+				</div>
+				<div class="row hide" >
+					<div class="col-md-4">
+						<div class="m-netcall-video" id="videoremote3"></div>
+					</div>
+					<div class="col-md-4">
+						<div class="m-netcall-video" id="videoremote4"></div>
+					</div>
+					<div class="col-md-4">
+						<div class="m-netcall-video" id="videoremote5"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div style="width: 70%;height: 500px;" id="therevideo"></div>
+</div>
+
+</body>
+</html>
