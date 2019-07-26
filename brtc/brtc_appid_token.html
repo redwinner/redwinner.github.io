@@ -5,18 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>Baidu-RTC</title>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/3.1.5/adapter.min.js" ></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.2/jquery.min.js" ></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js" ></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.2/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.1.0/bootbox.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"></script>
-<script type="text/javascript" src="baidu.rtc.sdk.js" ></script>
+<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.6.0/dist/baidu.rtc.sdk.js" ></script>
 <script type="text/javascript" src="js.cookie.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/cerulean/bootstrap.min.css" type="text/css"/>
 <link rel="stylesheet" href="css/demo.css" type="text/css"/>
 <link rel="stylesheet" href="css/main.css" type="text/css"/>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.2/css/font-awesome.min.css"/>
 </head>
 <body>
 
@@ -46,6 +41,7 @@ $(document).ready(function() {
 				remotevideoviewid: "therevideo",
 				localvideoviewid: "herevideo",
 				aspublisher: true,
+				usingdatachannel: true,
 				showvideobps: true,
 				remotevideoon: function(idx) {
 					console.log("remotevideoon, index:"+ idx);
@@ -53,15 +49,39 @@ $(document).ready(function() {
 				remotevideooff: function(idx) {
 					console.log("remotevideooff, index:"+ idx);
 				},
+				remotedata: function(data,label) {
+					console.log("got remote data:"+ data);
+					$('#remotedata').append(data);
+				},
 				success: function() {
 					$('#start').removeAttr('disabled').html("退出")
 						.click(function() {
 							$('#start').attr('disabled', true);
 							BRTC_Stop();
 						});
+					$('#details').remove();
+					$('#rtc_logo_img').remove();
 				},
-				error: function() {
+				localvideopublishing: function() {
+					$('#herevideo').block({
+										message: '<b>Publishing...</b>',
+										css: {
+											border: 'none',
+											backgroundColor: 'transparent',
+											color: 'white'
+										}
+									});
+				},
+				localvideopublished_ok: function() {
+					$('#herevideo').unblock();
+				},
+				error: function(error) {
+					alert("BRTC: " + error);
+					window.location.reload();
 					$('#start').removeAttr('disabled');
+				},
+				destroyed: function(error) {
+					window.location.reload();
 				},
 			});
 			Cookies.set("roomname_at_aapid_page",input_roomname);
@@ -98,28 +118,12 @@ $(document).ready(function() {
 			</div>
 			<button class="button big blue" autocomplete="off" id="start" style="width:300px">进入房间</button>
 			<div class="m-netcall hide" id="videos">
-				<div class="row">
-					<div class="col-md-4">
-							<div class="m-netcall-video" id="herevideo"></div>
-					</div>
-					<div class="col-md-4">
-
-					</div>
-				</div>
-				<div class="row hide" >
-					<div class="col-md-4">
-						<div class="m-netcall-video" id="videoremote3"></div>
-					</div>
-					<div class="col-md-4">
-						<div class="m-netcall-video" id="videoremote4"></div>
-					</div>
-					<div class="col-md-4">
-						<div class="m-netcall-video" id="videoremote5"></div>
-					</div>
-				</div>
+				<div  id="herevideo"></div>
 			</div>
 		</div>
 		<div style="width: 70%;height: 500px;" id="therevideo"></div>
+		<br/><br/><br/><br/><br/><br/>
+		<div style="width: 70%;height: 500px;" class="rtc_font_color" id="remotedata"></div>
 </div>
 
 </body>
