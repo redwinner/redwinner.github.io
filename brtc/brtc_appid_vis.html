@@ -55,7 +55,7 @@ $(document).ready(function() {
 	$('#start').click(function() {
 			var input_roomname = $('#roomname').val();
 			var input_appid = $('#appid').val();
-			var input_userid = $('#userid').val();
+			var input_userid = "100" + Math.floor(Math.random() * 1000000).toString(); //$('#userid').val();
 			var input_token = $('#token').val();
 			$(this).attr('disabled', true).unbind('click');
 			BRTC_Start({
@@ -135,12 +135,12 @@ $(document).ready(function() {
 					<div class="col-md-12" >
 						<div >
 							<div >
-								<div class="rtc_font_color" >请输入房间号/用户ID/APPID/TOKEN</div>
+								<div class="rtc_font_color" >请输入房间号/APPID</div>
 							</div>
 							<input autocomplete="off" class="rtc_input_line" autocomplete="off" type="text" placeholder="set room id" id="roomname" size="40" value="8888"></input><br>
-							<input autocomplete="off" class="rtc_input_line" autocomplete="off" type="text" placeholder="set user id" id="userid" size="40" value="10086"></input><br>
+							<input autocomplete="off" class="rtc_input_line hide" autocomplete="off" type="text" placeholder="set user id" id="userid" size="40" value="10086"></input><br>
 							<input autocomplete="off" class="rtc_input_line" autocomplete="off" type="text" placeholder="set app id" id="appid" size="40" value="appid"></input><br>
-							<input autocomplete="off" class="rtc_input_line" autocomplete="off" type="text" placeholder="token" id="token" size="80" value="token"></input>
+							<input autocomplete="off" class="rtc_input_line hide" autocomplete="off" type="text" placeholder="token" id="token" size="80" value="token"></input>
 					</div>
 					</div>
 				</div>
