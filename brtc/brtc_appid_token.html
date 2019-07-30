@@ -17,11 +17,40 @@
 
 <script >
 
+function GetRequest() {
+    var url = location.search;
+    var theRequest = new Object();
+        if (url.indexOf("?") != -1) {
+        var str = url.substr(1);
+        strs = str.split("&");
+        console.log(strs)
+        for(var i = 0; i < strs.length; i ++) {
+            theRequest[strs[i].split("=")[0]]=unescape(strs[i].split("=")[1]);
+        }
+    }
+    return theRequest;
+}
+
+var gRequest = GetRequest();
+
 $(document).ready(function() {
 	$('#roomname').attr("value",Cookies.get("roomname_at_aapid_page"));
 	$('#appid').attr("value",Cookies.get("appid"));
 	$('#userid').attr("value",Cookies.get("userid"));
 	$('#token').attr("value",Cookies.get("token"));
+
+	if (gRequest["roomname"]) {
+		$('#roomname').attr("value",gRequest["roomname"]);
+	}
+	if (gRequest["appid"]) {
+		$('#appid').attr("value",gRequest["appid"]);
+	}
+	if (gRequest["userid"]) {
+		$('#userid').attr("value",gRequest["userid"]);
+	}
+	if (gRequest["token"]) {
+		$('#token').attr("value",gRequest["token"]);
+	}
 
 	$('#start').click(function() {
 			var input_roomname = $('#roomname').val();
