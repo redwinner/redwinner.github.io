@@ -92,7 +92,9 @@ $(document).ready(function() {
 						});
 					$('#details').remove();
 					$('#rtc_logo_img').remove();
-					$('#actions').removeClass('hide').show();
+					if ($('#videodevice').get(0).options.length > 1) {
+						$('#actions').removeClass('hide').show();
+					}
 				},
 				localvideopublishing: function() {
 					$('#herevideo').block({
