@@ -32,6 +32,10 @@ function GetRequest() {
 
 var gRequest = GetRequest();
 var defaultDeviceID = null;
+var gDoPing = false;
+var gDoPong = false;
+var gPingStartupTime = 8000;
+var gPingRepeatTime  = 5000;
 
 $(document).ready(function() {
 	$('#roomname').attr("value",Cookies.get("roomname_at_aapid_page"));
@@ -50,6 +54,18 @@ $(document).ready(function() {
 	}
 	if (gRequest["token"]) {
 		$('#token').attr("value",gRequest["token"]);
+	}
+	if (gRequest["ping"]) {
+		gDoPing = true;
+	}
+	if (gRequest["pong"]) {
+		gDoPong = true;
+	}
+	if (gRequest["ping_startup_time_ms"]) {
+		gPingStartupTime = gRequest["ping_startup_time_ms"];
+	}
+	if (gRequest["ping_repeat_time_ms"]) {
+		gPingRepeatTime = gRequest["ping_repeat_time_ms"];
 	}
 
 	$('#start').click(function() {
@@ -83,6 +99,14 @@ $(document).ready(function() {
 				remotedata: function(data,label) {
 					console.log("got remote data:"+ data);
 					$('#remotedata').append(data);
+
+					if (gDoPong) {
+						BRTC_SendData("pong data.");
+					} else if (gDoPing) {
+						setTimeout(function() {
+							BRTC_SendData("new ping.");
+						}, gPingRepeatTime);
+					}
 				},
 				success: function() {
 					$('#start').removeAttr('disabled').html("退出")
@@ -94,6 +118,12 @@ $(document).ready(function() {
 					$('#rtc_logo_img').remove();
 					if ($('#videodevice').get(0).options.length > 1) {
 						$('#actions').removeClass('hide').show();
+					}
+
+					if (gDoPing) {
+						setTimeout(function() {
+							BRTC_SendData("ping data.");
+						}, gPingStartupTime);
 					}
 				},
 				localvideopublishing: function() {
