@@ -7,7 +7,7 @@
 <title>Baidu-RTC</title>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery@2.1.0/dist/jquery.min.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery-blockui@2.7.0/jquery.blockUI.js" ></script>
-<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.6.4/dist/baidu.rtc.sdk.js" ></script>
+<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.6.5/dist/baidu.rtc.sdk.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.6.1/demo/js.cookie.js"></script>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/bootswatch@3.3.7/cerulean/bootstrap.min.css" type="text/css"/>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/baidurtc@0.6.1/demo/css/demo.css" type="text/css"/>
@@ -23,7 +23,6 @@ function GetRequest() {
         if (url.indexOf("?") != -1) {
         var str = url.substr(1);
         strs = str.split("&");
-        console.log(strs)
         for(var i = 0; i < strs.length; i ++) {
             theRequest[strs[i].split("=")[0]]=unescape(strs[i].split("=")[1]);
         }
@@ -32,6 +31,7 @@ function GetRequest() {
 }
 
 var gRequest = GetRequest();
+var defaultDeviceID = null;
 
 $(document).ready(function() {
 	$('#roomname').attr("value",Cookies.get("roomname_at_aapid_page"));
@@ -73,6 +73,7 @@ $(document).ready(function() {
 				usingdatachannel: true,
 				showvideobps: true,
 				sharescreen: false,
+				videodeviceid: defaultDeviceID,
 				remotevideoon: function(idx) {
 					console.log("remotevideoon, index:"+ idx);
 				},
@@ -91,6 +92,7 @@ $(document).ready(function() {
 						});
 					$('#details').remove();
 					$('#rtc_logo_img').remove();
+					$('#actions').removeClass('hide').show();
 				},
 				localvideopublishing: function() {
 					$('#herevideo').block({
@@ -119,6 +121,30 @@ $(document).ready(function() {
 			Cookies.set("userid",input_userid);
 			Cookies.set("token",input_token);
 		});
+    function loadDevice() {
+        let callback = {
+            success: function (devices) {
+				let sel = document.getElementById("videodevice");
+
+                for (let i = 0;i < devices.length; i++){
+					sel.options.add(new Option(devices[i].label, devices[i].deviceId));
+					if (devices[i].label.includes('FaceTime')) {
+						defaultDeviceID = devices[i].deviceId;
+						sel.options.selectedIndex = i;
+					}
+                }
+
+                $('#videodevice').change( function(){
+                    BRTC_ReplaceVideo($('#videodevice').val());
+                });
+            }
+        }
+        BRTC_GetVideoDevices(callback);
+    }
+
+	setTimeout(function() {
+			loadDevice();
+		}, 300);
 	});
 </script>
 
@@ -147,6 +173,8 @@ $(document).ready(function() {
 				</div>
 			</div>
 			<button class="button big blue" autocomplete="off" id="start" style="width:300px">进入房间</button>
+            <div class="hide rtc_font_color" id="actions">切换摄像头<select class="rtc_font_color"  id="videodevice"></select>
+			</div>
 			<div class="m-netcall hide" id="videos">
 				<div  id="herevideo"></div>
 			</div>
