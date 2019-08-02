@@ -36,12 +36,16 @@ var gDoPing = false;
 var gDoPong = false;
 var gPingStartupTime = 8000;
 var gPingRepeatTime  = 5000;
+var gAsPublisher = true;
+var gShareScreen = false;
 
 $(document).ready(function() {
 	$('#roomname').attr("value",Cookies.get("roomname_at_aapid_page"));
 	$('#appid').attr("value",Cookies.get("appid"));
 	$('#userid').attr("value",Cookies.get("userid"));
 	$('#token').attr("value",Cookies.get("token"));
+
+	var input_userid = "100" + Math.floor(Math.random() * 1000000).toString(); //$('#userid').val();
 
 	if (gRequest["roomname"]) {
 		$('#roomname').attr("value",gRequest["roomname"]);
@@ -50,7 +54,7 @@ $(document).ready(function() {
 		$('#appid').attr("value",gRequest["appid"]);
 	}
 	if (gRequest["userid"]) {
-		$('#userid').attr("value",gRequest["userid"]);
+		input_userid = gRequest["userid"];
 	}
 	if (gRequest["token"]) {
 		$('#token').attr("value",gRequest["token"]);
@@ -67,11 +71,16 @@ $(document).ready(function() {
 	if (gRequest["ping_repeat_time_ms"]) {
 		gPingRepeatTime = gRequest["ping_repeat_time_ms"];
 	}
+	if (gRequest["listener_only"]) {
+		gAsPublisher = false;
+	}
+	if (gRequest["sharescreen"]) {
+		gShareScreen = true;
+	}
 
 	$('#start').click(function() {
 			var input_roomname = $('#roomname').val();
 			var input_appid = $('#appid').val();
-			var input_userid = "100" + Math.floor(Math.random() * 1000000).toString(); //$('#userid').val();
 			var input_token = $('#token').val();
 			$(this).attr('disabled', true).unbind('click');
 			BRTC_Start({
@@ -85,10 +94,10 @@ $(document).ready(function() {
 				feedid: 1000,
 				remotevideoviewid: "therevideo",
 				localvideoviewid: "herevideo",
-				aspublisher: true,
+				aspublisher: gAsPublisher,
 				usingdatachannel: true,
 				showvideobps: true,
-				sharescreen: false,
+				sharescreen: gShareScreen,
 				videodeviceid: defaultDeviceID,
 				remotevideoon: function(idx) {
 					console.log("remotevideoon, index:"+ idx);
@@ -116,7 +125,7 @@ $(document).ready(function() {
 						});
 					$('#details').remove();
 					$('#rtc_logo_img').remove();
-					if ($('#videodevice').get(0).options.length > 1) {
+					if (($('#videodevice').get(0).options.length > 1) && gAsPublisher && !gShareScreen) {
 						$('#actions').removeClass('hide').show();
 					}
 
@@ -174,9 +183,12 @@ $(document).ready(function() {
         BRTC_GetVideoDevices(callback);
     }
 
-	setTimeout(function() {
+    if (gAsPublisher) {
+		setTimeout(function() {
 			loadDevice();
 		}, 300);
+	};
+
 	});
 </script>
 
