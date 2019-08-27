@@ -77,14 +77,21 @@ $(document).ready(function() {
 	if (gRequest["sharescreen"]) {
 		gShareScreen = true;
 	}
+	if (gRequest["brtcserver"]) {
+		$('#brtcserver').removeClass('hide').show();
+		if (gRequest["brtcserver"].length > 5) { //wss://
+			$('#brtcserver').attr("value",gRequest["brtcserver"]);
+		}
+	}
 
 	$('#start').click(function() {
 			var input_roomname = $('#roomname').val();
 			var input_appid = $('#appid').val();
 			var input_token = $('#token').val();
+			var input_brtcserver = $('#brtcserver').val();
 			$(this).attr('disabled', true).unbind('click');
 			BRTC_Start({
-				server: "wss://rtc.exp.bcelive.com:8989/janus",
+				server: input_brtcserver,
 				appid: input_appid, 
 				token: input_token,
 				roomname: input_roomname,
@@ -166,6 +173,7 @@ $(document).ready(function() {
 			Cookies.set("appid",input_appid);
 			Cookies.set("userid",input_userid);
 			Cookies.set("token",input_token);
+			Cookies.set("brtcserver",input_brtcserver);
 		});
     function loadDevice() {
         let callback = {
@@ -216,7 +224,8 @@ $(document).ready(function() {
 							<input autocomplete="off" class="rtc_input_line" autocomplete="off" type="text" placeholder="set room id" id="roomname" size="40" value="8888"></input><br>
 							<input autocomplete="off" class="rtc_input_line hide" autocomplete="off" type="text" placeholder="set user id" id="userid" size="40" value="10086"></input><br>
 							<input autocomplete="off" class="rtc_input_line" autocomplete="off" type="text" placeholder="set app id" id="appid" size="40" value="appid"></input><br>
-							<input autocomplete="off" class="rtc_input_line hide" autocomplete="off" type="text" placeholder="token" id="token" size="80" value="token"></input>
+							<input autocomplete="off" class="rtc_input_line hide" autocomplete="off" type="text" placeholder="token" id="token" size="80" value="token"></input><br>
+							<input autocomplete="off" class="rtc_input_line hide" autocomplete="off" type="text" placeholder="wss://rtc.exp.bcelive.com:8989/janus" id="brtcserver" size="40" value="wss://rtc.exp.bcelive.com:8989/janus"></input>
 					</div>
 					</div>
 				</div>
