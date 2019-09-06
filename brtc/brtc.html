@@ -7,7 +7,7 @@
 <title>Baidu-RTC</title>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery@2.1.0/dist/jquery.min.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery-blockui@2.7.0/jquery.blockUI.js" ></script>
-<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.6.14/dist/baidu.rtc.sdk.js" ></script>
+<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.6.15/dist/baidu.rtc.sdk.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.6.1/demo/js.cookie.js"></script>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/bootswatch@3.3.7/cerulean/bootstrap.min.css" type="text/css"/>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/baidurtc@0.6.1/demo/css/demo.css" type="text/css"/>
@@ -111,7 +111,6 @@ $(document).ready(function() {
 				sharescreen: gShareScreen,
 				videodeviceid: defaultDeviceID,
 				linkdownupthreshold: 50,
-				showspinner: true,
 				linkdownevent: function() {
 					console.log("linkdownevent");
 				},
@@ -121,6 +120,10 @@ $(document).ready(function() {
 				logintimeout: 10000,
 				logintimeoutevent: function() {
 					console.log("timeout");
+				},
+				showspinner: true,
+				remotevideoloading: function(idx) {
+					console.log("remotevideoloading, index:"+ idx);
 				},
 				remotevideoon: function(idx) {
 					console.log("remotevideoon, index:"+ idx);
