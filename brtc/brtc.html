@@ -7,7 +7,7 @@
 <title>Baidu-RTC</title>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery@2.1.0/dist/jquery.min.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery-blockui@2.7.0/jquery.blockUI.js" ></script>
-<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.6.15/dist/baidu.rtc.sdk.js" ></script>
+<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.6.16/dist/baidu.rtc.sdk.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.6.1/demo/js.cookie.js"></script>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/bootswatch@3.3.7/cerulean/bootstrap.min.css" type="text/css"/>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/baidurtc@0.6.1/demo/css/demo.css" type="text/css"/>
@@ -46,6 +46,7 @@ $(document).ready(function() {
 	$('#token').attr("value",Cookies.get("token"));
 
 	var input_userid = "100" + Math.floor(Math.random() * 1000000).toString(); //$('#userid').val();
+	var rtmp_server = "";
 
 	if (gRequest["roomname"]) {
 		$('#roomname').attr("value",gRequest["roomname"]);
@@ -83,12 +84,19 @@ $(document).ready(function() {
 			$('#brtcserver').attr("value",gRequest["brtcserver"]);
 		}
 	}
+	if (gRequest["rtmpserver"]) {
+		$('#rtmpserver').removeClass('hide').show();
+		if (gRequest["rtmpserver"].length > 5) { //rtmp://
+			$('#rtmpserver').attr("value",gRequest["rtmpserver"]);
+		}
+	}
 
 	$('#start').click(function() {
 			var input_roomname = $('#roomname').val();
 			var input_appid = $('#appid').val();
 			var input_token = $('#token').val();
 			var input_brtcserver = $('#brtcserver').val();
+			var input_rtmpserver = $('#rtmpserver').val();
 			$(this).attr('disabled', true).unbind('click');
 			BRTC_Start({
 				server: input_brtcserver,
@@ -110,6 +118,7 @@ $(document).ready(function() {
 				showvideobps: true,
 				sharescreen: gShareScreen,
 				videodeviceid: defaultDeviceID,
+				rtmpserver: input_rtmpserver,
 				linkdownupthreshold: 50,
 				linkdownevent: function() {
 					console.log("linkdownevent");
@@ -189,6 +198,7 @@ $(document).ready(function() {
 			Cookies.set("userid",input_userid);
 			Cookies.set("token",input_token);
 			Cookies.set("brtcserver",input_brtcserver);
+			Cookies.set("rtmpserver",input_rtmpserver);
 		});
     function loadDevice() {
         let callback = {
@@ -240,7 +250,8 @@ $(document).ready(function() {
 							<input autocomplete="off" class="rtc_input_line hide" autocomplete="off" type="text" placeholder="set user id" id="userid" size="40" value="10086"></input><br>
 							<input autocomplete="off" class="rtc_input_line" autocomplete="off" type="text" placeholder="set app id" id="appid" size="40" value="appid"></input><br>
 							<input autocomplete="off" class="rtc_input_line hide" autocomplete="off" type="text" placeholder="token" id="token" size="80" value="token"></input><br>
-							<input autocomplete="off" class="rtc_input_line hide" autocomplete="off" type="text" placeholder="wss://rtc.exp.bcelive.com:8989/janus" id="brtcserver" size="40" value="wss://rtc.exp.bcelive.com:8989/janus"></input>
+							<input autocomplete="off" class="rtc_input_line hide" autocomplete="off" type="text" placeholder="wss://rtc.exp.bcelive.com:8989/janus" id="brtcserver" size="40" value="wss://rtc.exp.bcelive.com:8989/janus"></input><br>
+							<input autocomplete="off" class="rtc_input_line hide" autocomplete="off" type="text" placeholder="rtmp://" id="rtmpserver" size="40" value=""></input>
 					</div>
 					</div>
 				</div>
