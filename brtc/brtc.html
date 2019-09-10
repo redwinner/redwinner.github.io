@@ -7,7 +7,7 @@
 <title>Baidu-RTC</title>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery@2.1.0/dist/jquery.min.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery-blockui@2.7.0/jquery.blockUI.js" ></script>
-<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.6.16/dist/baidu.rtc.sdk.js" ></script>
+<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.6.17/dist/baidu.rtc.sdk.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.6.1/demo/js.cookie.js"></script>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/bootswatch@3.3.7/cerulean/bootstrap.min.css" type="text/css"/>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/baidurtc@0.6.1/demo/css/demo.css" type="text/css"/>
@@ -192,6 +192,9 @@ $(document).ready(function() {
 				destroyed: function(error) {
 					window.location.reload();
 				},
+				onlocalstream: function(stream) {
+					//local stream for display sonic wave
+				},
 			});
 			Cookies.set("roomname_at_aapid_page",input_roomname);
 			Cookies.set("appid",input_appid);
@@ -244,7 +247,7 @@ $(document).ready(function() {
 					<div class="col-md-12" >
 						<div >
 							<div >
-								<div class="rtc_font_color" >请输入房间号/APPID</div>
+								<div class="rtc_font_color" >请输入房间号/AppID</div>
 							</div>
 							<input autocomplete="off" class="rtc_input_line" autocomplete="off" type="text" placeholder="set room id" id="roomname" size="40" value="8888"></input><br>
 							<input autocomplete="off" class="rtc_input_line hide" autocomplete="off" type="text" placeholder="set user id" id="userid" size="40" value="10086"></input><br>
