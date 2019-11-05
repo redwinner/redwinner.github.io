@@ -111,7 +111,7 @@ $(document).ready(function() {
 		$('#manualvideo').removeClass('hide').show();
 		$('#therevideo').hide();
 		let sel = document.getElementById("feedid");
-		sel.options.add(new Option("No video(place holder)",999999999));
+		sel.options.add(new Option("NOT video(place holder)",999999999));
 		$('#feedid').change( function(){
 			var myfeedid = parseInt($('#feedid').val());
 			if(myfeedid != 999999999) {
