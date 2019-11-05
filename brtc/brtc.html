@@ -7,7 +7,7 @@
 <title>Baidu-RTC</title>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery@2.1.0/dist/jquery.min.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery-blockui@2.7.0/jquery.blockUI.js" ></script>
-<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.7.0/dist/baidu.rtc.sdk.js" ></script>
+<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.7.1/dist/baidu.rtc.sdk.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.6.1/demo/js.cookie.js"></script>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/bootswatch@3.3.7/cerulean/bootstrap.min.css" type="text/css"/>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/baidurtc@0.6.22/demo/css/demo.css" type="text/css"/>
@@ -42,7 +42,11 @@ var gAsPublisher = true;
 var gShareScreen = false;
 var gRtmpmix = false;
 var gRecording = false;
-var gAutoSubScribeVideo = true;
+var gAutoSubScribe = true;
+var gAutoPublish = true;
+var gUsingData = true;
+var gUsingVideo = true;
+var gUsingAudio = true;
 
 $(document).ready(function() {
 	$('#roomname').attr("value",Cookies.get("roomname_at_aapid_page"));
@@ -101,10 +105,11 @@ $(document).ready(function() {
 	if (gRequest["recording"]) {
 		gRecording = true;
 	}
-	if (gRequest["manualsubscribe"]) {
-		gAutoSubScribeVideo = false;
+	if (gRequest["no_autosubscribe"]) {
+		gAutoSubScribe = false;
 		$('#pullvideo').removeClass('hide').show();
 		$('#manualvideo').removeClass('hide').show();
+		$('#therevideo').hide();
 		let sel = document.getElementById("feedid");
 		sel.options.add(new Option("No video(place holder)",999999999));
 		$('#feedid').change( function(){
@@ -113,6 +118,18 @@ $(document).ready(function() {
 				BRTC_SubscribeStreaming("manualvideo",myfeedid);
 			}
 		});
+	}
+	if (gRequest["no_autopublish"]) {
+		gAutoPublish = false;
+	}
+	if (gRequest["no_data"]) {
+		gUsingData = false;
+	}
+	if (gRequest["no_video"]) {
+		gUsingVideo = false;
+	}
+	if (gRequest["no_audio"]) {
+		gUsingAudio = false;
 	}
 
 	$('#start').click(function() {
@@ -139,14 +156,17 @@ $(document).ready(function() {
 				remotevideoviewid5: "therevideo5",
 				mirrorlocalvideo: true,
 				aspublisher: gAsPublisher,
-				usingdatachannel: true,
+				usingdatachannel: gUsingData,
+				usingvideo: gUsingVideo,
+				usingaudio: gUsingAudio,
 				showvideobps: true,
 				sharescreen: gShareScreen,
 				videodeviceid: defaultDeviceID,
 				rtmpserver: input_rtmpserver,
 				rtmpmix: gRtmpmix,
 				recording: gRecording,
-				autosubscribe: gAutoSubScribeVideo,
+				autosubscribe: gAutoSubScribe,
+				autopublish: gAutoPublish,
 				linkdownupthreshold: 50,
 				linkdownevent: function() {
 					console.log("linkdownevent");
