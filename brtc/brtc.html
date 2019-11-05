@@ -7,13 +7,13 @@
 <title>Baidu-RTC</title>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery@2.1.0/dist/jquery.min.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery-blockui@2.7.0/jquery.blockUI.js" ></script>
-<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.6.22/dist/baidu.rtc.sdk.js" ></script>
+<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.7.0/dist/baidu.rtc.sdk.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.6.1/demo/js.cookie.js"></script>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/bootswatch@3.3.7/cerulean/bootstrap.min.css" type="text/css"/>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/baidurtc@0.6.22/demo/css/demo.css" type="text/css"/>
 <style type="text/css">
 	.hide{display:none !important}
-	</style>
+</style>
 </head>
 <body>
 
@@ -42,6 +42,7 @@ var gAsPublisher = true;
 var gShareScreen = false;
 var gRtmpmix = false;
 var gRecording = false;
+var gAutoSubScribeVideo = true;
 
 $(document).ready(function() {
 	$('#roomname').attr("value",Cookies.get("roomname_at_aapid_page"));
@@ -97,9 +98,21 @@ $(document).ready(function() {
 	if (gRequest["rtmpmix"]) {
 		gRtmpmix = true;
 	}
-
 	if (gRequest["recording"]) {
 		gRecording = true;
+	}
+	if (gRequest["manualsubscribe"]) {
+		gAutoSubScribeVideo = false;
+		$('#pullvideo').removeClass('hide').show();
+		$('#manualvideo').removeClass('hide').show();
+		let sel = document.getElementById("feedid");
+		sel.options.add(new Option("No video(place holder)",999999999));
+		$('#feedid').change( function(){
+			var myfeedid = parseInt($('#feedid').val());
+			if(myfeedid != 999999999) {
+				BRTC_SubscribeStreaming("manualvideo",myfeedid);
+			}
+		});
 	}
 
 	$('#start').click(function() {
@@ -133,6 +146,7 @@ $(document).ready(function() {
 				rtmpserver: input_rtmpserver,
 				rtmpmix: gRtmpmix,
 				recording: gRecording,
+				autosubscribe: gAutoSubScribeVideo,
 				linkdownupthreshold: 50,
 				linkdownevent: function() {
 					console.log("linkdownevent");
@@ -153,6 +167,14 @@ $(document).ready(function() {
 				},
 				remotevideooff: function(idx) {
 					console.log("remotevideooff, index:"+ idx);
+				},
+				remotevideocoming: function(id,display) {
+					console.log("remotevideocoming, feedid:"+ id + ":" + display);
+					let sel = document.getElementById("feedid");
+					sel.options.add(new Option(display,id));
+				},
+				remotevideoleaving: function(id) {
+					console.log("remotevideoleaving, feedid:"+ id);
 				},
 				remotedata: function(data,label) {
 					console.log("got remote data:"+ data);
@@ -276,10 +298,13 @@ $(document).ready(function() {
 			<button class="button big blue" autocomplete="off" id="start" style="width:300px">进入房间</button>
             <div class="hide rtc_font_color" id="actions">切换摄像头<select class="rtc_font_color"  id="videodevice"></select>
 			</div>
+			<div class="hide rtc_font_color" id="pullvideo">选择拉流<select class="rtc_font_color"  id="feedid"></select>
+			</div>
 			<div class="m-netcall hide" id="videos">
 				<div  id="herevideo"></div>
 			</div>
 		</div>
+		<div class="hide" style="width: 70%;height: 500px;" id="manualvideo""></div>
 		<div style="width: 70%;height: 500px;" id="therevideo"></div>
 		<br/><br/><br/><br/><br/><br/>
 		<div style="width: 70%;height: 50px;" class="rtc_font_color" id="remotedata"></div>
