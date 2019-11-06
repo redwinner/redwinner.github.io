@@ -170,6 +170,7 @@ $(document).ready(function() {
 			var input_token = $('#token').val();
 			var input_brtcserver = $('#brtcserver').val();
 			var input_rtmpserver = $('#rtmpserver').val();
+			$('#twobar').remove();
 			$(this).attr('disabled', true).unbind('click');
 			BRTC_Start({
 				server: input_brtcserver,
@@ -351,6 +352,10 @@ $(document).ready(function() {
             <div class="hide rtc_font_color" id="actions">切换摄像头<select class="rtc_font_color"  id="videodevice"></select>
 			</div>
 			<div class="hide rtc_font_color" id="pullvideo">选择拉流<select class="rtc_font_color"  id="feedid"></select>
+			</div>
+			<div id="twobar">
+				<div class="rtc_font_color">iOS/安卓App下载，密码 brtc</div>
+				<img src="bar.png" style="width: 200px; height: 200px;" />
 			</div>
 			<div class="m-netcall hide" id="videos">
 				<div  id="herevideo"></div>
