@@ -48,6 +48,10 @@ var gUsingData = true;
 var gUsingVideo = true;
 var gUsingAudio = true;
 
+var gMuted = false;
+var gVideoMuted = false;
+var gPublished = true;
+
 $(document).ready(function() {
 	$('#roomname').attr("value",Cookies.get("roomname_at_aapid_page"));
 	$('#appid').attr("value",Cookies.get("appid"));
@@ -121,6 +125,7 @@ $(document).ready(function() {
 	}
 	if (gRequest["no_autopublish"]) {
 		gAutoPublish = false;
+		gPublished = false;
 	}
 	if (gRequest["no_data"]) {
 		gUsingData = false;
@@ -130,6 +135,33 @@ $(document).ready(function() {
 	}
 	if (gRequest["no_audio"]) {
 		gUsingAudio = false;
+	}
+
+	if (gRequest["test"]) {
+		// Add a 'mute' button
+		$('#herevideo').append('<button class="button" id="mute" style="z-index:10; position: absolute; bottom: 0px; left: 0px; margin: 15px;">Mute</button>');
+		$('#mute').click(function(){
+			gMuted = !gMuted;
+			BRTC_MuteMicphone(gMuted);
+		});
+		$('#herevideo').append('<button class="button" id="mutevideo" style="z-index:10; position: absolute; bottom: 0px; left: 70px; margin: 15px;">Video</button>');
+		$('#mutevideo').click(function(){
+			gVideoMuted = !gVideoMuted;
+			BRTC_MuteCamera(gVideoMuted);
+		});
+		// Add an 'unpublish' button
+		$('#herevideo').append('<button class="button" id="unpublish" style="z-index:10; position: absolute; bottom: 0px; right: 0px; margin: 15px;">Unpublish</button>');
+		$('#unpublish').click(function(){
+			if (gPublished) {
+				BRTC_StopPublish();
+				gPublished = false;
+			} else {
+				BRTC_StartPublish();
+				gPublished = true;
+				gMuted = false;
+				gVideoMuted = false;
+			}
+		});
 	}
 
 	$('#start').click(function() {
