@@ -164,6 +164,10 @@ $(document).ready(function() {
 		});
 	}
 
+	$('#downloadapp').click(function(){
+		$('#barimg').removeClass('hide').show();
+	});
+
 	$('#start').click(function() {
 			var input_roomname = $('#roomname').val();
 			var input_appid = $('#appid').val();
@@ -354,8 +358,9 @@ $(document).ready(function() {
 			<div class="hide rtc_font_color" id="pullvideo">选择拉流<select class="rtc_font_color"  id="feedid"></select>
 			</div>
 			<div id="twobar">
-				<div class="rtc_font_color">iOS/安卓App下载:</div>
-				<img src="bar.png" style="width: 200px; height: 200px;" />
+				<div style="height: 50px;"></div>
+				<div class="rtc_font_color" id="downloadapp">iOS/安卓App下载:</div>
+				<img class="hide" src="bar.png" style="width: 200px; height: 200px;" id="barimg"/>
 			</div>
 			<div class="m-netcall hide" id="videos">
 				<div  id="herevideo"></div>
