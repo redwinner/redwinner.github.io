@@ -48,7 +48,7 @@ var gUsingData = true;
 var gUsingVideo = true;
 var gUsingAudio = true;
 var gShowVideobps = true;
-var gVideoProile = "hires";
+var gVideoProfile = "hires";
 
 var gMuted = false;
 var gVideoMuted = false;
@@ -142,7 +142,17 @@ $(document).ready(function() {
 		gShowVideobps = false;
 	}
 	if (gRequest["videoprofile"]) {
-		gVideoProile = gRequest["videoprofile"];
+		gVideoProfile = gRequest["videoprofile"];
+		if (gVideoProfile.includes("x")) {
+			strs = gVideoProfile.split("x");
+			var w =  strs[0];
+			var h =  strs[1];
+
+			gVideoProfile = {
+				'height': {'ideal': h},
+				'width':  {'ideal': w}
+			};
+		}
 	}
 
 	if (gRequest["test"]) {
@@ -213,7 +223,7 @@ $(document).ready(function() {
 				autosubscribe: gAutoSubScribe,
 				autopublish: gAutoPublish,
 				linkdownupthreshold: 50,
-				videoprofile: gVideoProile,
+				videoprofile: gVideoProfile,
 				// videoprofile: "lowres","stdres","hires","fhdres","4kres"
 				// videoprofile:  {
                 //             'height': {'ideal': 240},
