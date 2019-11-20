@@ -180,6 +180,10 @@ $(document).ready(function() {
 				gVideoMuted = false;
 			}
 		});
+		$('#herevideo').append('<button class="button" id="screen" style="z-index:10; position: absolute; top: 0px; left: 0px; margin: 15px;">Screen</button>');
+		$('#screen').click(function(){
+			BRTC_SwitchScreen();
+		});
 	}
 
 	$('#downloadapp').click(function(){
