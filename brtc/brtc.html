@@ -7,7 +7,7 @@
 <title>Baidu-RTC</title>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery@2.1.0/dist/jquery.min.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery-blockui@2.7.0/jquery.blockUI.js" ></script>
-<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.7.8/dist/baidu.rtc.sdk.js" ></script>
+<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.7.9/dist/baidu.rtc.sdk.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.6.1/demo/js.cookie.js"></script>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/bootswatch@3.3.7/cerulean/bootstrap.min.css" type="text/css"/>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/baidurtc@0.6.22/demo/css/demo.css" type="text/css"/>
@@ -50,6 +50,7 @@ var gUsingAudio = true;
 var gShowVideobps = true;
 var gVideoProfile = "hires";
 var gWaitPermissionTimeOutMs = 30000;
+var gCandidateIP = null;
 
 var gMuted = false;
 var gVideoMuted = false;
@@ -159,6 +160,10 @@ $(document).ready(function() {
 		gWaitPermissionTimeOutMs = gRequest["waitpermissiontimeout"];
 	}
 
+	if (gRequest["candidateip"]) {
+		gCandidateIP = gRequest["candidateip"];
+	}
+
 	if (gRequest["test"]) {
 		// Add a 'mute' button
 		$('#herevideo').append('<button class="button" id="mute" style="z-index:10; position: absolute; bottom: 0px; left: 0px; margin: 15px;">Mute</button>');
@@ -232,6 +237,7 @@ $(document).ready(function() {
 				autopublish: gAutoPublish,
 				linkdownupthreshold: 50,
 				waitpermissiontimeoutms: gWaitPermissionTimeOutMs,
+				candidateip: gCandidateIP,
 				videoprofile: gVideoProfile,
 				// videoprofile: "lowres","stdres","hires","fhdres","4kres"
 				// videoprofile:  {
