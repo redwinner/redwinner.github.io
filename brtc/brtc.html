@@ -52,6 +52,7 @@ var gVideoProfile = "hires";
 var gWaitPermissionTimeOutMs = 30000;
 var gCandidateIP = null;
 var gMediaServerIP = null;
+var gShowSpinner = true;
 
 var gMuted = false;
 var gVideoMuted = false;
@@ -169,6 +170,10 @@ $(document).ready(function() {
 		gMediaServerIP = gRequest["mediaserverip"];
 	}
 
+	if (gRequest["no_showspinner"]) {
+		gShowSpinner = false;
+	}
+
 	if (gRequest["test"]) {
 		// Add a 'mute' button
 		$('#herevideo').append('<button class="button" id="mute" style="z-index:10; position: absolute; bottom: 0px; left: 0px; margin: 15px;">Mute</button>');
@@ -263,7 +268,7 @@ $(document).ready(function() {
 				logintimeoutevent: function() {
 					console.log("timeout");
 				},
-				showspinner: true,
+				showspinner: gShowSpinner,
 				remotevideoloading: function(idx) {
 					console.log("remotevideoloading, index:"+ idx);
 				},
