@@ -150,11 +150,18 @@ $(document).ready(function() {
 		if (gVideoProfile.includes("x")) {
 			strs = gVideoProfile.split("x");
 			var w =  strs[0];
-			var h =  strs[1];
+			var h_fps =  strs[1].split("@");
+			var h = h_fps[0];
+
+			var fps = 15;
+			if (h_fps.length>1) {
+				fps = h_fps[1];
+			}
 
 			gVideoProfile = {
 				'height': {'ideal': h},
-				'width':  {'ideal': w}
+				'width':  {'ideal': w},
+				'frameRate': { 'ideal': fps, 'max': 25 }
 			};
 		}
 	}
