@@ -9,7 +9,6 @@
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery-blockui@2.7.0/jquery.blockUI.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.7.15/dist/baidu.rtc.sdk.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.6.1/demo/js.cookie.js"></script>
-<script type="text/javascript" src="https://code.bdstatic.com/npm/vconsole@3.3.4/dist/vconsole.min.js"></script>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/bootswatch@3.3.7/cerulean/bootstrap.min.css" type="text/css"/>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/baidurtc@0.6.22/demo/css/demo.css" type="text/css"/>
 <style type="text/css">
@@ -211,7 +210,13 @@ $(document).ready(function() {
 		$('#screen').click(function(){
 			BRTC_SwitchScreen();
 		});
-		var vConsole = new VConsole();
+
+		var scriptEle = document.createElement("script");
+		scriptEle.src = 'https://code.bdstatic.com/npm/vconsole@3.3.4/dist/vconsole.min.js';
+		document.body.appendChild(scriptEle)
+		scriptEle.onload = function(){
+			window.vConsole = new VConsole();
+		}
 	}
 
 	$('#downloadapp').click(function(){
