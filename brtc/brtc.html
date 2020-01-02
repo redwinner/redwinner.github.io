@@ -404,7 +404,7 @@ $(document).ready(function() {
         }
         BRTC_GetVideoDevices(callback);
 
-        let audido_callback = {
+        let audio_callback = {
             success: function (devices) {
 				let sel = document.getElementById("audiodevice");
 
@@ -421,9 +421,9 @@ $(document).ready(function() {
                 });
             }
         }
-		BRTC_GetAudioInputDevices(audido_callback);
+		BRTC_GetAudioInputDevices(audio_callback);
 
-        let audido_output_callback = {
+        let audio_output_callback = {
             success: function (devices) {
 				let sel = document.getElementById("audiooutputdevice");
 
@@ -440,7 +440,7 @@ $(document).ready(function() {
                 });
             }
         }
-		BRTC_GetAudioOutputDevices(audido_output_callback);
+		BRTC_GetAudioOutputDevices(audio_output_callback);
 
         let devices_callback = {
             success: function (devices) {
@@ -452,8 +452,8 @@ $(document).ready(function() {
 				console.log("on devices event: " + event);
 				// BRTC_GetAllDevices(devices_callback);
 				BRTC_GetVideoDevices(callback);
-				BRTC_GetAudioInputDevices(audido_callback);
-				BRTC_GetAudioOutputDevices(audido_output_callback);
+				BRTC_GetAudioInputDevices(audio_callback);
+				BRTC_GetAudioOutputDevices(audio_output_callback);
             });
     }
 
