@@ -7,7 +7,7 @@
 <title>Baidu-RTC</title>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery@2.1.0/dist/jquery.min.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery-blockui@2.7.0/jquery.blockUI.js" ></script>
-<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.7.19/dist/baidu.rtc.sdk.js" ></script>
+<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.7.20/dist/baidu.rtc.sdk.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.7.15/demo/js.cookie.js"></script>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/bootswatch@3.3.7/cerulean/bootstrap.min.css" type="text/css"/>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/baidurtc@0.7.15/demo/css/demo.css" type="text/css"/>
@@ -53,6 +53,7 @@ var gWaitPermissionTimeOutMs = 30000;
 var gCandidateIP = null;
 var gMediaServerIP = null;
 var gShowSpinner = true;
+var gUserEvent = false;
 
 var gMuted = false;
 var gVideoMuted = false;
@@ -181,6 +182,10 @@ $(document).ready(function() {
 		gShowSpinner = false;
 	}
 
+	if (gRequest["userevent"]) {
+		gUserEvent = true;
+	}
+
 	if (gRequest["test"]) {
 		// Add a 'mute' button
 		$('#herevideo').append('<button class="button" id="mute" style="z-index:10; position: absolute; bottom: 0px; left: 0px; margin: 15px;">Mute</button>');
@@ -280,6 +285,13 @@ $(document).ready(function() {
 				},
 				linkupevent: function() {
 					console.log("linkupevent");
+				},
+				userevent: gUserEvent,
+				userevent_joinedroom: function(id,display) {
+					console.log("userevent_joinedroom  id: " + id + ", display: " + display);
+				},
+				userevent_leavingroom: function(id,display) {
+					console.log("userevent_leavingroom id: " + id + ", display: " + display);
 				},
 				mediastate: function(medium,on) {
 					console.log("send medium " + medium +" is: " + on);
