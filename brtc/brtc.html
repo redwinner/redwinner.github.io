@@ -7,7 +7,7 @@
 <title>Baidu-RTC</title>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery@2.1.0/dist/jquery.min.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery-blockui@2.7.0/jquery.blockUI.js" ></script>
-<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.7.23/dist/baidu.rtc.sdk.js" ></script>
+<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.7.25/dist/baidu.rtc.sdk.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.7.15/demo/js.cookie.js"></script>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/bootswatch@3.3.7/cerulean/bootstrap.min.css" type="text/css"/>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/baidurtc@0.7.15/demo/css/demo.css" type="text/css"/>
@@ -47,6 +47,8 @@ var gAutoPublish = true;
 var gUsingData = true;
 var gUsingVideo = true;
 var gUsingAudio = true;
+var gReceivingVideo = true;
+var gReceivingAudio = true;
 var gShowVideobps = true;
 var gVideoProfile = "hires";
 var gWaitPermissionTimeOutMs = 30000;
@@ -142,6 +144,12 @@ $(document).ready(function() {
 	}
 	if (gRequest["no_audio"]) {
 		gUsingAudio = false;
+	}
+	if (gRequest["no_receivingvideo"]) {
+		gReceivingVideo = false;
+	}
+	if (gRequest["no_receivingaudio"]) {
+		gReceivingAudio = false;
 	}
 	if (gRequest["no_showvideobps"]) {
 		gShowVideobps = false;
@@ -248,7 +256,6 @@ $(document).ready(function() {
 				videocodec: "h264",
 				userid: input_userid,
 				displayname: "brtc webclient",
-				feedid: 1000,
 				remotevideoviewid: "therevideo",
 				localvideoviewid: "herevideo",
 				remotevideoviewid2: "therevideo2",
@@ -260,6 +267,10 @@ $(document).ready(function() {
 				usingdatachannel: gUsingData,
 				usingvideo: gUsingVideo,
 				usingaudio: gUsingAudio,
+				receivingvideo: gReceivingVideo,
+				receivingaudio: gReceivingAudio,
+				// bitrate: 1500,
+				// screenbitrate: 1500,
 				showvideobps: gShowVideobps,
 				sharescreen: gShareScreen,
 				audiodeviceid: null,
