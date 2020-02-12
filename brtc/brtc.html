@@ -56,6 +56,8 @@ var gCandidateIP = null;
 var gMediaServerIP = null;
 var gShowSpinner = true;
 var gUserEvent = false;
+var gAutologin = false;
+var gState  = 'init'; //'playing'
 
 var gMuted = false;
 var gVideoMuted = false;
@@ -66,6 +68,12 @@ $(document).ready(function() {
 	$('#appid').attr("value",Cookies.get("appid"));
 	$('#userid').attr("value",Cookies.get("userid"));
 	$('#token').attr("value",Cookies.get("token"));
+
+	gState = Cookies.get('state');
+
+	if (typeof gState === 'undefined'){
+		gState = 'init';
+	}
 
 	var input_userid = "100" + Math.floor(Math.random() * 1000000).toString(); //$('#userid').val();
 	var rtmp_server = "";
@@ -192,6 +200,10 @@ $(document).ready(function() {
 
 	if (gRequest["userevent"]) {
 		gUserEvent = true;
+	}
+
+	if (gRequest["autologin"]) {
+		gAutologin = true;
 	}
 
 	if (gRequest["test"]) {
@@ -345,6 +357,7 @@ $(document).ready(function() {
 					$('#start').removeAttr('disabled').html("退出")
 						.click(function() {
 							$('#start').attr('disabled', true);
+							Cookies.set("state",'init');
 							BRTC_Stop();
 						});
 					$('#details').remove();
@@ -368,6 +381,10 @@ $(document).ready(function() {
 						setTimeout(function() {
 							BRTC_SendData("ping data.");
 						}, gPingStartupTime);
+					}
+
+					if (gAutologin) {
+						Cookies.set("state",'playing');
 					}
 				},
 				localvideopublishing: function() {
@@ -490,10 +507,21 @@ $(document).ready(function() {
 		}, 300);
 	};
 
+	if (gAutologin) {
+		if (gState === 'playing') {
+			$('#login').hide();
+			$('#auto').removeClass('hide').show();
+			$('#continueplaying').click(function (){
+				$('#login').removeClass('hide').show();
+				$('#start').trigger('click');
+			});
+		}
+	}
+
 	});
 </script>
 
-<div class="container" >
+<div class="container" id="login">
 		<div class="col-md-12" style="text-align: center">
 			<img src="https://code.bdstatic.com/npm/baidurtc@0.7.15/demo/img/rtc_logo.png" id="rtc_logo_img"/>
 			<div >
@@ -545,6 +573,9 @@ $(document).ready(function() {
 		<div style="width: 70%;height: 500px;" id="therevideo3"></div>
 		<div style="width: 70%;height: 500px;" id="therevideo4"></div>
 		<div style="width: 70%;height: 500px;" id="therevideo5"></div>
+</div>
+<div class="hide" id="auto">
+	<div class="rtc_title_font_color" id="continueplaying" style="width:500px; text-align:center">拉流播放时请不要刷新页面，点击[继续播放]-></div>
 </div>
 
 </body>
