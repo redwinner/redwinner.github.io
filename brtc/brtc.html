@@ -58,6 +58,7 @@ var gShowSpinner = true;
 var gUserEvent = false;
 var gAutologin = false;
 var gState  = 'init'; //'playing'
+var gBitRate = 1500;
 
 var gMuted = false;
 var gVideoMuted = false;
@@ -206,6 +207,10 @@ $(document).ready(function() {
 		gAutologin = true;
 	}
 
+	if (gRequest["bitrate"]) {
+		gBitRate = parseInt(gRequest["bitrate"]);
+	}
+
 	if (gRequest["test"]) {
 		// Add a 'mute' button
 		$('#herevideo').append('<button class="button" id="mute" style="z-index:10; position: absolute; bottom: 0px; left: 0px; margin: 15px;">Mute</button>');
@@ -281,8 +286,8 @@ $(document).ready(function() {
 				usingaudio: gUsingAudio,
 				receivingvideo: gReceivingVideo,
 				receivingaudio: gReceivingAudio,
-				// bitrate: 1500,
-				// screenbitrate: 1500,
+				bitrate: gBitRate,
+				screenbitrate: gBitRate,
 				showvideobps: gShowVideobps,
 				sharescreen: gShareScreen,
 				audiodeviceid: null,
