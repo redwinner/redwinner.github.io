@@ -7,7 +7,7 @@
 <title>Baidu-RTC</title>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery@2.1.0/dist/jquery.min.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery-blockui@2.7.0/jquery.blockUI.js" ></script>
-<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.7.36/dist/baidu.rtc.sdk.js" ></script>
+<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.7.37/dist/baidu.rtc.sdk.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.7.15/demo/js.cookie.js"></script>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/bootswatch@3.3.7/cerulean/bootstrap.min.css" type="text/css"/>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/baidurtc@0.7.15/demo/css/demo.css" type="text/css"/>
@@ -55,7 +55,7 @@ var gWaitPermissionTimeOutMs = 30000;
 var gCandidateIP = null;
 var gMediaServerIP = null;
 var gShowSpinner = true;
-var gUserEvent = false;
+var gUserEvent = true;
 var gAutologin = false;
 var gState  = 'init'; //'playing'
 var gBitRate = 1500;
@@ -315,8 +315,8 @@ $(document).ready(function() {
 					console.log("linkupevent");
 				},
 				userevent: gUserEvent,
-				userevent_joinedroom: function(id,display) {
-					console.log("userevent_joinedroom  id: " + id + ", display: " + display);
+				userevent_joinedroom: function(id,display,attribute) {
+					console.log("userevent_joinedroom id: " + id + ", display: " + display + ", attribute:" + attribute);
 				},
 				userevent_leavingroom: function(id,display) {
 					console.log("userevent_leavingroom id: " + id + ", display: " + display);
@@ -338,8 +338,8 @@ $(document).ready(function() {
 				remotevideooff: function(idx) {
 					console.log("remotevideooff, index:"+ idx);
 				},
-				remotevideocoming: function(id,display) {
-					console.log("remotevideocoming, feedid:"+ id + ":" + display);
+				remotevideocoming: function(id,display,attribute) {
+					console.log("remotevideocoming, feedid:"+ id + ":" + display + ":" + attribute);
 					let sel = document.getElementById("feedid");
 					sel.options.add(new Option(display,id));
 				},
@@ -420,6 +420,14 @@ $(document).ready(function() {
 				onlocalstream_end: function(name) {
 					//end event of local stream
 					console.log("onlocalstream_end name: " + name);
+				},
+				onmessage: function(msg) {
+					// event onmessage.
+					console.log("onmessage id: " + msg.id + " data: "+ msg.data);
+				},
+				onattribute: function(a) {
+					// event onattribute
+					console.log("onattribute id: " + a.id + " attribute: "+ a.attribute);
 				},
 			});
 			Cookies.set("roomname_at_aapid_page",input_roomname);
