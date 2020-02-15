@@ -391,7 +391,8 @@ $(document).ready(function() {
 					if (gAutologin) {
 						Cookies.set("state",'playing');
 					}
-					BRTC_SetAttribute("{name:'red',tel:'123456789'}");
+					$('#msg').removeClass('hide').show();
+					$('#sendmsg').removeClass('hide').show();
 				},
 				localvideopublishing: function() {
 					$('#herevideo').block({
@@ -405,6 +406,7 @@ $(document).ready(function() {
 				},
 				localvideopublished_ok: function() {
 					$('#herevideo').unblock();
+					BRTC_SetUserAttribute("{name:'red',tel:'123456789'}");
 				},
 				error: function(error) {
 					alert("BRTC: " + error);
@@ -425,6 +427,7 @@ $(document).ready(function() {
 				onmessage: function(msg) {
 					// event onmessage.
 					console.log("onmessage id: " + msg.id + " data: "+ msg.data);
+					$('#remotedata').append(msg.data);
 				},
 				onattribute: function(a) {
 					// event onattribute
@@ -583,6 +586,8 @@ $(document).ready(function() {
 		<div style="width: 70%;height: 500px;" id="therevideo"></div>
 		<br/><br/><br/><br/><br/><br/>
 		<div style="width: 70%;height: 50px;" class="rtc_font_color" id="remotedata"></div>
+		<textarea class="hide" name="msg" id="msg" style="width: 70%;height: 20px; background-color:White;border-color:#C0C0FF;border-width:1px;border-style:Solid;height:93px;width:445px;\"></textarea><br>
+		<button class="hide" onclick="BRTC_SendMessageToUser(document.getElementById('msg').value)" id="sendmsg">发送消息</button>
 		<div style="width: 70%;height: 500px;" id="therevideo2"></div>
 		<div style="width: 70%;height: 500px;" id="therevideo3"></div>
 		<div style="width: 70%;height: 500px;" id="therevideo4"></div>
