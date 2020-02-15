@@ -211,6 +211,15 @@ $(document).ready(function() {
 		gBitRate = parseInt(gRequest["bitrate"]);
 	}
 
+	if (gRequest["textroom"]) {
+		gAutoSubScribe = false;
+		gAutoPublish = false;
+		gUsingData = false;
+		gUsingVideo = false;
+		gUsingAudio = false;
+		$('#therevideo').hide();
+	}
+
 	if (gRequest["test"]) {
 		// Add a 'mute' button
 		$('#herevideo').append('<button class="button" id="mute" style="z-index:10; position: absolute; bottom: 0px; left: 0px; margin: 15px;">Mute</button>');
@@ -586,7 +595,7 @@ $(document).ready(function() {
 		<div style="width: 70%;height: 500px;" id="therevideo"></div>
 		<br/><br/><br/><br/><br/><br/>
 		<div style="width: 70%;height: 50px;" class="rtc_font_color" id="remotedata"></div>
-		<textarea class="hide" name="msg" id="msg" style="width: 70%;height: 20px; background-color:White;border-color:#C0C0FF;border-width:1px;border-style:Solid;height:93px;width:445px;\"></textarea><br>
+		<textarea class="hide" name="msg" id="msg" style="background-color:White;border-color:#C0C0FF;border-width:1px;border-style:Solid;height:50px;width:800px;">众里寻他千百度~</textarea><br>
 		<button class="hide" onclick="BRTC_SendMessageToUser(document.getElementById('msg').value)" id="sendmsg">发送消息</button>
 		<div style="width: 70%;height: 500px;" id="therevideo2"></div>
 		<div style="width: 70%;height: 500px;" id="therevideo3"></div>
