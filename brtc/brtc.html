@@ -59,6 +59,8 @@ var gUserEvent = true;
 var gAutologin = false;
 var gState  = 'init'; //'playing'
 var gBitRate = 1500;
+var gPreviewLocal = false;
+var gUsingMessageAPI = false;
 
 var gMuted = false;
 var gVideoMuted = false;
@@ -217,8 +219,20 @@ $(document).ready(function() {
 		gUsingData = false;
 		gUsingVideo = false;
 		gUsingAudio = false;
+		gUsingMessageAPI = true;
 		$('#therevideo').hide();
 		$('#videos').remove();
+	}
+
+	if (gRequest["preview"]) {
+		gPreviewLocal = true;
+		$('#testpreviewvideo').removeClass('hide').show();
+		BRTC_DeviceTest_Start({localvideoviewid: "testpreviewvideo"});
+		$('#unpublish').value = "Publish";
+	}
+
+	if (gRequest["messageapi"]) {
+		gUsingMessageAPI = true;
 	}
 
 	if (gRequest["test"]) {
@@ -238,9 +252,17 @@ $(document).ready(function() {
 		$('#unpublish').click(function(){
 			if (gPublished) {
 				BRTC_StopPublish();
+				$('#unpublish').value = "Publish";
+				if (gPreviewLocal) {
+					BRTC_DeviceTest_Stop();
+				}
 				gPublished = false;
 			} else {
+				if (gPreviewLocal) {
+					BRTC_DeviceTest_Stop();
+				}
 				BRTC_StartPublish();
+				$('#unpublish').value = "unPublish";
 				gPublished = true;
 				gMuted = false;
 				gVideoMuted = false;
@@ -416,7 +438,6 @@ $(document).ready(function() {
 				},
 				localvideopublished_ok: function() {
 					$('#herevideo').unblock();
-					BRTC_SetUserAttribute("{name:'red',tel:'123456789'}");
 				},
 				error: function(error) {
 					alert("BRTC: " + error);
@@ -429,6 +450,9 @@ $(document).ready(function() {
 				onlocalstream: function(stream,name) {
 					//local stream for display sonic wave
 					console.log("onlocalstream name: " + name);
+					if (gUsingMessageAPI)  {
+						BRTC_SetUserAttribute("{name:'red',tel:'123456789'}");
+					}
 				},
 				onlocalstream_end: function(name) {
 					//end event of local stream
@@ -593,6 +617,7 @@ $(document).ready(function() {
 			</div>
 		</div>
 		<div class="hide" style="width: 70%;height: 500px;" id="manualvideo"></div>
+		<div class="hide" style="width: 70%;height: 500px;" id="testpreviewvideo"></div>
 		<div style="width: 70%;height: 500px;" id="therevideo"></div>
 		<br/><br/><br/><br/><br/><br/>
 		<div style="width: 70%;height: 50px;" class="rtc_font_color" id="remotedata"></div>
