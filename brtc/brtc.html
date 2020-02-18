@@ -7,7 +7,7 @@
 <title>Baidu-RTC</title>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery@2.1.0/dist/jquery.min.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery-blockui@2.7.0/jquery.blockUI.js" ></script>
-<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.7.40/dist/baidu.rtc.sdk.js" ></script>
+<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.7.41/dist/baidu.rtc.sdk.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.7.15/demo/js.cookie.js"></script>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/bootswatch@3.3.7/cerulean/bootstrap.min.css" type="text/css"/>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/baidurtc@0.7.15/demo/css/demo.css" type="text/css"/>
@@ -457,6 +457,12 @@ $(document).ready(function() {
 				onlocalstream_end: function(name) {
 					//end event of local stream
 					console.log("onlocalstream_end name: " + name);
+				},
+				// localvideopublished_closed: function() {
+				// 	console.log("localvideopublished_closed by server, please do StartPublish again");
+				// },
+				remotevideo_closed:  function(feedid) {
+					console.log("remotevideo_closed(feedid: " + feedid + ") by server, please do SubScribing again");
 				},
 				onmessage: function(msg) {
 					// event onmessage.
