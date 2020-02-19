@@ -7,7 +7,7 @@
 <title>Baidu-RTC</title>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery@2.1.0/dist/jquery.min.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery-blockui@2.7.0/jquery.blockUI.js" ></script>
-<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.7.41/dist/baidu.rtc.sdk.js" ></script>
+<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.7.42/dist/baidu.rtc.sdk.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.7.15/demo/js.cookie.js"></script>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/bootswatch@3.3.7/cerulean/bootstrap.min.css" type="text/css"/>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/baidurtc@0.7.15/demo/css/demo.css" type="text/css"/>
@@ -248,14 +248,15 @@ $(document).ready(function() {
 			BRTC_MuteCamera(gVideoMuted);
 		});
 		// Add an 'unpublish' button
-		$('#herevideo').append('<button class="button" id="unpublish" style="z-index:10; position: absolute; bottom: 0px; right: 0px; margin: 15px;">Unpublish</button>');
+		$('#herevideo').append('<button class="button" id="unpublish" style="z-index:10; position: absolute; bottom: 0px; right: 0px; margin: 15px;">Un/publish</button>');
 		$('#unpublish').click(function(){
 			if (gPublished) {
-				BRTC_StopPublish();
-				$('#unpublish').value = "Publish";
-				if (gPreviewLocal) {
-					BRTC_DeviceTest_Stop();
-				}
+				BRTC_StopPublish().then(()=> {
+					$('#unpublish').value = "Publish";
+					if (gPreviewLocal) {
+						BRTC_DeviceTest_Start({localvideoviewid: "testpreviewvideo"});
+					}
+				});
 				gPublished = false;
 			} else {
 				if (gPreviewLocal) {
