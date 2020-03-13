@@ -430,8 +430,26 @@ $(document).ready(function() {
 					if (gAutologin) {
 						Cookies.set("state",'playing');
 					}
-					$('#msg').removeClass('hide').show();
-					$('#sendmsg').removeClass('hide').show();
+
+					var ignore_rooms_for_sendmsg = [
+						'7a5f1d54-e482-4e8e-8610-605d296fc371',
+						'3021725c-fdd7-426d-aee0-9f84b7e6336f',
+						'0cc3b3cb-d07e-4cdf-9ee3-30c5f2b6e361',
+						'b1092ce6-db7c-4bee-8b9a-28da5021d0a0',
+						'ee2e3738-45c5-4027-a6ae-39dea09999f7',
+						'65a5aec3-6450-4747-8484-97028f9cc865',
+						'b0b3d4dd-467d-454f-93d9-678746a7570c',
+						'703cda41-d6a2-4934-a7de-d38b99ee137b',
+						'f2db08ed-d90a-40d7-9adf-d0ae1d598fa4',
+						'2df29610-0fb8-4bbe-877c-51b4fc3515f6',
+						'f5eba0ec-674a-4a21-bff5-e0441b451759',
+					];
+
+					if (ignore_rooms_for_sendmsg.indexOf(input_roomname) < 0) {
+						$('#msg').removeClass('hide').show();
+						$('#sendmsg').removeClass('hide').show();
+					}
+
 					if (gUsingMessageAPI) {
 						BRTC_SetUserAttribute("{name:'red',tel:'123456789'}");
 					}
