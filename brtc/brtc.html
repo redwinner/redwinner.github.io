@@ -466,6 +466,7 @@ $(document).ready(function() {
 							r.forEach(e => {
 								if (e.volume == 0) {
 									console.error("GetRemoteAudioLevels volume is 0: " + e);
+									console.error(e);
 								}
 							});
 						}, 5000);
