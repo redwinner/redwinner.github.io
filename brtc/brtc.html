@@ -7,7 +7,7 @@
 <title>Baidu-RTC</title>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery@2.1.0/dist/jquery.min.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery-blockui@2.7.0/jquery.blockUI.js" ></script>
-<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.7.60/dist/baidu.rtc.sdk.js" ></script>
+<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.7.65/dist/baidu.rtc.sdk.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.7.15/demo/js.cookie.js"></script>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/bootswatch@3.3.7/cerulean/bootstrap.min.css" type="text/css"/>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/baidurtc@0.7.15/demo/css/demo.css" type="text/css"/>
@@ -51,6 +51,7 @@ var gReceivingVideo = true;
 var gReceivingAudio = true;
 var gShowVideobps = true;
 var gVideoProfile = "hires";
+var gScreenProfile = "raw";
 var gWaitPermissionTimeOutMs = 30000;
 var gCandidateIP = null;
 var gMediaServerIP = null;
@@ -187,6 +188,10 @@ $(document).ready(function() {
 			};
 		}
 	}
+	if (gRequest["screenprofile"]) {
+		gScreenProfile = gRequest["screenprofile"];
+	}
+
 	if (gRequest["waitpermissiontimeout"]) {
 		gWaitPermissionTimeOutMs = gRequest["waitpermissiontimeout"];
 	}
@@ -352,6 +357,8 @@ $(document).ready(function() {
                 //             'height': {'ideal': 240},
                 //             'width':  {'ideal': 240}
                 //         },
+				screensharevideoprofile: gScreenProfile,
+				// screensharevideoprofile: "lowres","stdres","hires","fhdres","4kres","1280x720"
 				linkdownevent: function() {
 					console.log("linkdownevent");
 				},
