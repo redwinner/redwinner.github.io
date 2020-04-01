@@ -550,7 +550,9 @@ $(document).ready(function() {
                 }
 
                 $('#videodevice').change( function(){
-                    BRTC_ReplaceVideo($('#videodevice').val());
+					BRTC_ReplaceVideo($('#videodevice').val());
+					defaultDeviceID = $('#videodevice').val();
+					BRTC_SetParamSettings({videodeviceid: defaultDeviceID});
                 });
             }
         }
@@ -569,7 +571,8 @@ $(document).ready(function() {
                 }
 
                 $('#audiodevice').change( function(){
-                    BRTC_ReplaceAudio($('#audiodevice').val());
+					BRTC_ReplaceAudio($('#audiodevice').val());
+					BRTC_SetParamSettings({audiodeviceid: $('#audiodevice').val()});
                 });
             }
         }
