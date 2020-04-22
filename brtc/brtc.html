@@ -7,7 +7,7 @@
 <title>Baidu-RTC</title>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery@2.1.0/dist/jquery.min.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery-blockui@2.7.0/jquery.blockUI.js" ></script>
-<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.7.69/dist/baidu.rtc.sdk.js" ></script>
+<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.7.70/dist/baidu.rtc.sdk.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.7.15/demo/js.cookie.js"></script>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/bootswatch@3.3.7/cerulean/bootstrap.min.css" type="text/css"/>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/baidurtc@0.7.15/demo/css/demo.css" type="text/css"/>
@@ -129,6 +129,10 @@ $(document).ready(function() {
 	}
 	if (gRequest["rtmpmix"]) {
 		gRtmpmix = true;
+	}
+	if (gRequest["rtmpmixtemplate"]) {
+		$('#rtmpmixtemplate').removeClass('hide').show();
+		$('#rtmpmixtemplate').attr("value",gRequest["rtmpmixtemplate"]);
 	}
 	if (gRequest["recording"]) {
 		gRecording = true;
@@ -316,6 +320,7 @@ $(document).ready(function() {
 			var input_token = $('#token').val();
 			var input_brtcserver = $('#brtcserver').val();
 			var input_rtmpserver = $('#rtmpserver').val();
+			var input_rtmpmixtemplate = $('#rtmpmixtemplate').val();
 			$('#twobar').remove();
 			$(this).attr('disabled', true).unbind('click');
 			BRTC_Start({
@@ -347,6 +352,7 @@ $(document).ready(function() {
 				videodeviceid: defaultDeviceID,
 				audiooutputdeviceid: null,
 				rtmpserver: input_rtmpserver,
+				rtmpmixtemplate: input_rtmpmixtemplate,
 				rtmpmix: gRtmpmix,
 				recording: gRecording,
 				autosubscribe: gAutoSubScribe,
@@ -536,6 +542,7 @@ $(document).ready(function() {
 			Cookies.set("token",input_token);
 			Cookies.set("brtcserver",input_brtcserver);
 			Cookies.set("rtmpserver",input_rtmpserver);
+			Cookies.set("rtmpmixtemplate",input_rtmpmixtemplate);
 		});
     function loadDevice() {
         let callback = {
@@ -658,7 +665,8 @@ $(document).ready(function() {
 							<input autocomplete="off" class="rtc_input_line" autocomplete="off" type="text" placeholder="set app id" id="appid" size="40" value="appid"></input><br>
 							<input autocomplete="off" class="rtc_input_line hide" autocomplete="off" type="text" placeholder="token" id="token" size="80" value="token"></input><br>
 							<input autocomplete="off" class="rtc_input_line hide" autocomplete="off" type="text" placeholder="wss://rtc.exp.bcelive.com:8989/janus" id="brtcserver" size="40" value="wss://rtc.exp.bcelive.com:8989/janus"></input><br>
-							<input autocomplete="off" class="rtc_input_line hide" autocomplete="off" type="text" placeholder="rtmp://" id="rtmpserver" size="40" value=""></input>
+							<input autocomplete="off" class="rtc_input_line hide" autocomplete="off" type="text" placeholder="rtmp://" id="rtmpserver" size="40" value=""></input><br>
+							<input autocomplete="off" class="rtc_input_line hide" autocomplete="off" type="text" placeholder="" id="rtmpmixtemplate" size="40" value=""></input>
 					</div>
 					</div>
 				</div>
