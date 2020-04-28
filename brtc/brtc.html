@@ -65,6 +65,7 @@ var gPreviewLocal = false;
 var gUsingMessageAPI = false;
 var gVolumeMonitor = false;
 var gMirrorLocalVideo = true;
+var gReportMonitorData = false;
 
 var gMuted = false;
 var gVideoMuted = false;
@@ -257,6 +258,10 @@ $(document).ready(function() {
 
     if (gRequest["no_mirrorlocalvideo"]) {
         gMirrorLocalVideo = false;
+	}
+
+    if (gRequest["reportmonitordata"]) {
+        gReportMonitorData = true;
     }
 
 	if (gRequest["test"]) {
@@ -360,6 +365,7 @@ $(document).ready(function() {
 				autoresubscribing: !gAutoSubScribe,
 				linkdownupthreshold: 50,
 				waitpermissiontimeoutms: gWaitPermissionTimeOutMs,
+				reportmonitordata: gReportMonitorData,
 				candidateip: gCandidateIP,
 				mediaserverip: gMediaServerIP,
 				videoprofile: gVideoProfile,
