@@ -113,6 +113,7 @@ $(document).ready(function() {
 	}
 	if (gRequest["listener_only"]) {
 		gAsPublisher = false;
+		gAutoPublish = false;
 	}
 	if (gRequest["sharescreen"]) {
 		gShareScreen = true;
@@ -651,6 +652,13 @@ $(document).ready(function() {
 			});
 		}
 	}
+
+	['manualvideo', 'therevideo', 'therevideo1', 'therevideo2',
+	 'therevideo3', 'therevideo4', 'therevideo5'].forEach( i =>{
+		$('#' + i ).dblclick(function (){
+			$('#' + i).get(0).requestFullscreen();
+		})
+	});
 
 	});
 </script>
