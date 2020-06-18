@@ -67,6 +67,7 @@ var gVolumeMonitor = false;
 var gMirrorLocalVideo = true;
 var gReportMonitorData = false;
 var gReportEnv = 'online';
+var gDynamicRemoteVideoView = false;
 
 var gMuted = false;
 var gVideoMuted = false;
@@ -270,6 +271,10 @@ $(document).ready(function() {
         gReportEnv = gRequest["reportenv"];
 	}
 
+	if (gRequest["dynamicvideoview"]) {
+        gDynamicRemoteVideoView = true;
+	}
+
 	if (gRequest["test"]) {
 		// Add a 'mute' button
 		$('#herevideo').append('<button class="button" id="mute" style="z-index:10; position: absolute; bottom: 0px; left: 0px; margin: 15px;">Mute</button>');
@@ -419,9 +424,17 @@ $(document).ready(function() {
 					console.log("remotevideocoming, feedid:"+ id + ":" + display + ":" + attribute);
 					let sel = document.getElementById("feedid");
 					sel.options.add(new Option(display,id));
+
+					if (!gAutoSubScribe && gDynamicRemoteVideoView) {
+						$('#manualvideo').append('<div style="width: 100%;height: 100%;" id="videoremote_' + id + '"></div>');
+						BRTC_SubscribeStreaming('videoremote_' + id, id);
+					}
 				},
 				remotevideoleaving: function(id) {
 					console.log("remotevideoleaving, feedid:"+ id);
+					if (!gAutoSubScribe && gDynamicRemoteVideoView) {
+						$('#videoremote_' + id).remove();
+					}
 				},
 				remotedata: function(data,label) {
 					console.log("got remote data:"+ data);
