@@ -68,6 +68,7 @@ var gMirrorLocalVideo = true;
 var gReportMonitorData = false;
 var gReportEnv = 'online';
 var gDynamicRemoteVideoView = false;
+var gLog = false;
 
 var gMuted = false;
 var gVideoMuted = false;
@@ -275,7 +276,12 @@ $(document).ready(function() {
         gDynamicRemoteVideoView = true;
 	}
 
+    if (gRequest["log"]) {
+        gLog = true;
+    }
+
 	if (gRequest["test"]) {
+        gLog = true;
 		// Add a 'mute' button
 		$('#herevideo').append('<button class="button" id="mute" style="z-index:10; position: absolute; bottom: 0px; left: 0px; margin: 15px;">Mute</button>');
 		$('#mute').click(function(){
@@ -340,7 +346,7 @@ $(document).ready(function() {
 			$('#twobar').remove();
 			$(this).attr('disabled', true).unbind('click');
 			BRTC_Start({
-				debuglevel: true, // true, false, 'all', ['debug','log','error']
+                debuglevel: gLog, // true, false, 'all', ['debug','log','error']
 				server: input_brtcserver,
 				appid: input_appid, 
 				token: input_token,
