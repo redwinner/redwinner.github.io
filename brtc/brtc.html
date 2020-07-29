@@ -215,6 +215,40 @@ $(document).ready(function() {
 		gMediaServerIP = gRequest["mediaserverip"];
 	}
 
+	if (gRequest["mediaserverdn"]) {
+		var mediaServerDN = gRequest["mediaserverdn"];
+
+		let xmlHttp = null;
+		try { // Firefox, Opera 8.0+, Safari, IE7
+			xmlHttp = new XMLHttpRequest();
+		}
+		catch (e) { // Old IE
+			try {
+				xmlHttp = new ActiveXObject('Microsoft.XMLHTTP');
+			}
+			catch (e) {
+				window.alert('Your browser does not support XMLHTTP!');
+				return;
+			}
+		}
+		xmlHttp.open('GET', 'https://dns.google.com/resolve?name=' + mediaServerDN + '&type=A', true);
+		xmlHttp.send();
+		xmlHttp.onreadystatechange = function () {
+			if (xmlHttp.readyState === 4) {
+				if (xmlHttp.status === 200) {
+					let response = JSON.parse(xmlHttp.responseText);
+					if (response.Status == 0) {
+						gMediaServerIP = response.Answer[0].data;
+					}
+				}
+				else {
+					let response = JSON.parse(xmlHttp.responseText);
+					error(response.message);
+				}
+			}
+		};
+	}
+
 	if (gRequest["no_showspinner"]) {
 		gShowSpinner = false;
 	}
