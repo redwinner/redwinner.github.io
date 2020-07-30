@@ -69,6 +69,7 @@ var gReportMonitorData = false;
 var gReportEnv = 'online';
 var gDynamicRemoteVideoView = false;
 var gLog = false;
+var gName = 'brtc webclient';
 
 var gMuted = false;
 var gVideoMuted = false;
@@ -314,6 +315,10 @@ $(document).ready(function() {
         gLog = true;
     }
 
+    if (gRequest["displayname"]) {
+        gName = gRequest["displayname"];
+    }
+
 	if (gRequest["test"]) {
         gLog = true;
 		// Add a 'mute' button
@@ -387,7 +392,7 @@ $(document).ready(function() {
 				roomname: input_roomname,
 				videocodec: "h264",
 				userid: input_userid,
-				displayname: "brtc webclient",
+				displayname: gName,
 				remotevideoviewid: "therevideo",
 				localvideoviewid: "herevideo",
 				remotevideoviewid2: "therevideo2",
