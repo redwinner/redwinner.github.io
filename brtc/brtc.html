@@ -239,7 +239,12 @@ $(document).ready(function() {
 				if (xmlHttp.status === 200) {
 					let response = JSON.parse(xmlHttp.responseText);
 					if (response.Status == 0) {
-						gMediaServerIP = response.Answer[0].data;
+						Answer.some( e => {
+							if (e.type == 1) { // got ip Address.
+								gMediaServerIP = e.data;
+								return true;
+							}
+						});
 					}
 				}
 				else {
