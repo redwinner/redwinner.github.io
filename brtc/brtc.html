@@ -2,17 +2,38 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>Baidu-RTC</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" >
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery@2.1.0/dist/jquery.min.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery-blockui@2.7.0/jquery.blockUI.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.9.6/dist/baidu.rtc.sdk.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.7.15/demo/js.cookie.js"></script>
-<link rel="stylesheet" href="https://code.bdstatic.com/npm/bootswatch@3.3.7/cerulean/bootstrap.min.css" type="text/css"/>
-<link rel="stylesheet" href="https://code.bdstatic.com/npm/baidurtc@0.7.15/demo/css/demo.css" type="text/css"/>
+<link rel="stylesheet" href="https://code.bdstatic.com/npm/bootswatch@3.3.7/cerulean/bootstrap.min.css" type="text/css">
+<link rel="stylesheet" href="https://code.bdstatic.com/npm/baidurtc@0.7.15/demo/css/demo.css" type="text/css">
 <style type="text/css">
-	.hide{display:none !important}
+.hide {
+    display: none !important;
+}
+
+.rtc-input-line {
+    border-bottom: 2px solid #4D66FE;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    font-size: 16px;
+    color: #4D66FE;
+}
+
+.rtc-font-color {
+    font-size: 12px;
+    color: #4D66FE;
+}
+
+.rtc-title-font-color {
+    font-size: 20px;
+    color: #1A1C47;
+}
 </style>
 </head>
 <body>
@@ -21,12 +42,12 @@
 
 function GetRequest() {
     var url = location.search;
-    var theRequest = new Object();
-        if (url.indexOf("?") != -1) {
+    var theRequest = {};
+    if (url.indexOf('?') !== -1) {
         var str = url.substr(1);
-        strs = str.split("&");
-        for(var i = 0; i < strs.length; i ++) {
-            theRequest[strs[i].split("=")[0]]=decodeURIComponent(strs[i].split("=")[1]);
+        var strs = str.split('&');
+        for (var i = 0; i < strs.length; i++) {
+            theRequest[strs[i].split('=')[0]] = decodeURIComponent(strs[i].split('=')[1]);
         }
     }
     return theRequest;
@@ -50,8 +71,8 @@ var gUsingAudio = true;
 var gReceivingVideo = true;
 var gReceivingAudio = true;
 var gShowVideobps = true;
-var gVideoProfile = "hires";
-var gScreenProfile = "raw";
+var gVideoProfile = 'hires';
+var gScreenProfile = 'raw';
 var gWaitPermissionTimeOutMs = 30000;
 var gCandidateIP = null;
 var gMediaServerIP = null;
@@ -59,7 +80,8 @@ var gShowSpinner = true;
 var gUserEvent = true;
 var gSessionEvent = true;
 var gAutologin = false;
-var gState  = 'init'; //'playing'
+// 'playing'
+var gState  = 'init';
 var gBitRate = 1500;
 var gPreviewLocal = false;
 var gUsingMessageAPI = false;
@@ -75,737 +97,742 @@ var gMuted = false;
 var gVideoMuted = false;
 var gPublished = true;
 
-$(document).ready(function() {
-	$('#roomname').attr("value",Cookies.get("roomname_at_aapid_page"));
-	$('#appid').attr("value",Cookies.get("appid"));
-	$('#userid').attr("value",Cookies.get("userid"));
-	$('#token').attr("value",Cookies.get("token"));
+$(document).ready(function () {
+    $('#roomname').attr('value', Cookies.get('roomname_at_aapid_page'));
+    $('#appid').attr('value', Cookies.get('appid'));
+    $('#userid').attr('value', Cookies.get('userid'));
+    $('#token').attr('value', Cookies.get('token'));
 
-	gState = Cookies.get('state');
+    gState = Cookies.get('state');
 
-	if (typeof gState === 'undefined'){
-		gState = 'init';
-	}
+    if (typeof gState === 'undefined') {
+        gState = 'init';
+    }
 
-	var input_userid = "100" + Math.floor(Math.random() * 1000000).toString(); //$('#userid').val();
-	var rtmp_server = "";
+    var input_userid = '100' + Math.floor(Math.random() * 1000000).toString();
+    var rtmp_server = '';
 
-	if (gRequest["roomname"]) {
-		$('#roomname').attr("value",gRequest["roomname"]);
-	}
-	if (gRequest["appid"]) {
-		$('#appid').attr("value",gRequest["appid"]);
-	}
-	if (gRequest["userid"]) {
-		input_userid = gRequest["userid"];
-	}
-	if (gRequest["token"]) {
-		$('#token').attr("value",gRequest["token"]);
-	}
-	if (gRequest["ping"]) {
-		gDoPing = true;
-	}
-	if (gRequest["pong"]) {
-		gDoPong = true;
-	}
-	if (gRequest["ping_startup_time_ms"]) {
-		gPingStartupTime = gRequest["ping_startup_time_ms"];
-	}
-	if (gRequest["ping_repeat_time_ms"]) {
-		gPingRepeatTime = gRequest["ping_repeat_time_ms"];
-	}
-	if (gRequest["listener_only"]) {
-		gAsPublisher = false;
-		gAutoPublish = false;
-	}
-	if (gRequest["sharescreen"]) {
-		gShareScreen = true;
-	}
-	if (gRequest["brtcserver"]) {
-		$('#brtcserver').removeClass('hide').show();
-		if (gRequest["brtcserver"].length > 5) { //wss://
-			$('#brtcserver').attr("value",gRequest["brtcserver"]);
-		}
-	}
-	if (gRequest["rtmpserver"]) {
-		$('#rtmpserver').removeClass('hide').show();
-		if (gRequest["rtmpserver"].length > 5) { //rtmp://
-			$('#rtmpserver').attr("value",gRequest["rtmpserver"]);
-		}
-	}
-	if (gRequest["rtmpmix"]) {
-		gRtmpmix = true;
-	}
-	if (gRequest["rtmpmixtemplate"]) {
-		// side_by_side_primary_720p_16_9, side_by_side_equal_720p_16_9, picture_in_picture_bottom_720p_16_9
-		$('#rtmpmixtemplate').removeClass('hide').show();
-		$('#rtmpmixtemplate').attr("value",gRequest["rtmpmixtemplate"]);
-	}
-	if (gRequest["recording"]) {
-		gRecording = true;
-	}
-	if (gRequest["no_autosubscribe"]) {
-		gAutoSubScribe = false;
-		$('#pullvideo').removeClass('hide').show();
-		$('#manualvideo').removeClass('hide').show();
-		$('#therevideo').hide();
-		let sel = document.getElementById("feedid");
-		sel.options.add(new Option("NOT video(place holder)",999999999));
-		$('#feedid').change( function(){
-			var myfeedid = parseInt($('#feedid').val());
-			if(myfeedid != 999999999) {
-				BRTC_SubscribeStreaming("manualvideo",myfeedid);
-			}
-		});
-	}
-	if (gRequest["no_autopublish"]) {
-		gAutoPublish = false;
-		gPublished = false;
-	}
-	if (gRequest["no_data"]) {
-		gUsingData = false;
-	}
-	if (gRequest["no_video"]) {
-		gUsingVideo = false;
-	}
-	if (gRequest["no_audio"]) {
-		gUsingAudio = false;
-	}
-	if (gRequest["no_receivingvideo"]) {
-		gReceivingVideo = false;
-	}
-	if (gRequest["no_receivingaudio"]) {
-		gReceivingAudio = false;
-	}
-	if (gRequest["no_showvideobps"]) {
-		gShowVideobps = false;
-	}
-	if (gRequest["videoprofile"]) {
-		gVideoProfile = gRequest["videoprofile"];
-		if (gVideoProfile.includes("x")) {
-			strs = gVideoProfile.split("x");
-			var w =  strs[0];
-			var h_fps =  strs[1].split("@");
-			var h = h_fps[0];
+    if (gRequest['roomname']) {
+        $('#roomname').attr('value', gRequest['roomname']);
+    }
+    if (gRequest['appid']) {
+        $('#appid').attr('value', gRequest['appid']);
+    }
+    if (gRequest['userid']) {
+        input_userid = gRequest['userid'];
+    }
+    if (gRequest['token']) {
+        $('#token').attr('value', gRequest['token']);
+    }
+    if (gRequest['ping']) {
+        gDoPing = true;
+    }
+    if (gRequest['pong']) {
+        gDoPong = true;
+    }
+    if (gRequest['ping_startup_time_ms']) {
+        gPingStartupTime = gRequest['ping_startup_time_ms'];
+    }
+    if (gRequest['ping_repeat_time_ms']) {
+        gPingRepeatTime = gRequest['ping_repeat_time_ms'];
+    }
+    if (gRequest['listener_only']) {
+        gAsPublisher = false;
+        gAutoPublish = false;
+    }
+    if (gRequest['sharescreen']) {
+        gShareScreen = true;
+    }
+    if (gRequest['brtcserver']) {
+        $('#brtcserver').removeClass('hide').show();
+        // wss://
+        if (gRequest['brtcserver'].length > 5) {
+            $('#brtcserver').attr('value', gRequest['brtcserver']);
+        }
+    }
+    if (gRequest['rtmpserver']) {
+        $('#rtmpserver').removeClass('hide').show();
+        // rtmp://
+        if (gRequest['rtmpserver'].length > 5) {
+            $('#rtmpserver').attr('value', gRequest['rtmpserver']);
+        }
+    }
+    if (gRequest['rtmpmix']) {
+        gRtmpmix = true;
+    }
+    if (gRequest['rtmpmixtemplate']) {
+        // side_by_side_primary_720p_16_9, side_by_side_equal_720p_16_9, picture_in_picture_bottom_720p_16_9
+        $('#rtmpmixtemplate').removeClass('hide').show();
+        $('#rtmpmixtemplate').attr('value', gRequest['rtmpmixtemplate']);
+    }
+    if (gRequest['recording']) {
+        gRecording = true;
+    }
+    if (gRequest['no_autosubscribe']) {
+        gAutoSubScribe = false;
+        $('#pullvideo').removeClass('hide').show();
+        $('#manualvideo').removeClass('hide').show();
+        $('#therevideo').hide();
+        let sel = document.getElementById('feedid');
+        sel.options.add(new Option('NOT video(place holder)', 999999999));
+        $('#feedid').change(function () {
+            var myfeedid = parseInt($('#feedid').val(), 10);
+            if (myfeedid !== 999999999) {
+                BRTC_SubscribeStreaming('manualvideo', myfeedid);
+            }
+        });
+    }
+    if (gRequest['no_autopublish']) {
+        gAutoPublish = false;
+        gPublished = false;
+    }
+    if (gRequest['no_data']) {
+        gUsingData = false;
+    }
+    if (gRequest['no_video']) {
+        gUsingVideo = false;
+    }
+    if (gRequest['no_audio']) {
+        gUsingAudio = false;
+    }
+    if (gRequest['no_receivingvideo']) {
+        gReceivingVideo = false;
+    }
+    if (gRequest['no_receivingaudio']) {
+        gReceivingAudio = false;
+    }
+    if (gRequest['no_showvideobps']) {
+        gShowVideobps = false;
+    }
+    if (gRequest['videoprofile']) {
+        gVideoProfile = gRequest['videoprofile'];
+        if (gVideoProfile.includes('x')) {
+            var strs = gVideoProfile.split('x');
+            var w =  strs[0];
+            var h_fps =  strs[1].split('@');
+            var h = h_fps[0];
 
-			var fps = 15;
-			if (h_fps.length>1) {
-				fps = h_fps[1];
-			}
+            var fps = 15;
+            if (h_fps.length > 1) {
+                fps = h_fps[1];
+            }
 
-			gVideoProfile = {
-				'height': {'ideal': h},
-				'width':  {'ideal': w},
-				'frameRate': { 'ideal': fps}
-			};
-		}
-	}
-	if (gRequest["screenprofile"]) {
-		gScreenProfile = gRequest["screenprofile"];
-	}
+            gVideoProfile = {
+                'height': {'ideal': h},
+                'width': {'ideal': w},
+                'frameRate': {'ideal': fps}
+            };
+        }
+    }
+    if (gRequest['screenprofile']) {
+        gScreenProfile = gRequest['screenprofile'];
+    }
 
-	if (gRequest["waitpermissiontimeout"]) {
-		gWaitPermissionTimeOutMs = gRequest["waitpermissiontimeout"];
-	}
+    if (gRequest['waitpermissiontimeout']) {
+        gWaitPermissionTimeOutMs = gRequest['waitpermissiontimeout'];
+    }
 
-	if (gRequest["candidateip"]) {
-		gCandidateIP = gRequest["candidateip"];
-	}
+    if (gRequest['candidateip']) {
+        gCandidateIP = gRequest['candidateip'];
+    }
 
-	if (gRequest["mediaserverip"]) {
-		gMediaServerIP = gRequest["mediaserverip"];
-	}
+    if (gRequest['mediaserverip']) {
+        gMediaServerIP = gRequest['mediaserverip'];
+    }
 
-	if (gRequest["mediaserverdn"]) {
-		var mediaServerDN = gRequest["mediaserverdn"];
+    if (gRequest['mediaserverdn']) {
+        var mediaServerDN = gRequest['mediaserverdn'];
 
-		let xmlHttp = null;
-		try { // Firefox, Opera 8.0+, Safari, IE7
-			xmlHttp = new XMLHttpRequest();
-		}
-		catch (e) { // Old IE
-			try {
-				xmlHttp = new ActiveXObject('Microsoft.XMLHTTP');
-			}
-			catch (e) {
-				window.alert('Your browser does not support XMLHTTP!');
-				return;
-			}
-		}
-		xmlHttp.open('GET', 'https://dns.google.com/resolve?name=' + mediaServerDN + '&type=A', true);
-		xmlHttp.send();
-		xmlHttp.onreadystatechange = function () {
-			if (xmlHttp.readyState === 4) {
-				if (xmlHttp.status === 200) {
-					let response = JSON.parse(xmlHttp.responseText);
-					if (response.Status == 0) {
-						response.Answer.some( e => {
-							if (e.type == 1) { // got ip Address.
-								gMediaServerIP = e.data;
-								return true;
-							}
-						});
-					}
-				}
-				else {
-					let response = JSON.parse(xmlHttp.responseText);
-					error(response.message);
-				}
-			}
-		};
-	}
+        let xmlHttp = null;
+        try { // Firefox, Opera 8.0+, Safari, IE7
+            xmlHttp = new XMLHttpRequest();
+        }
+        catch (e) { // Old IE
+            try {
+                xmlHttp = new ActiveXObject('Microsoft.XMLHTTP');
+            }
+            catch (e) {
+                window.alert('Your browser does not support XMLHTTP!');
+                return;
+            }
+        }
+        xmlHttp.open('GET', 'https://dns.google.com/resolve?name=' + mediaServerDN + '&type=A', true);
+        xmlHttp.send();
+        xmlHttp.onreadystatechange = function () {
+            if (xmlHttp.readyState === 4) {
+                if (xmlHttp.status === 200) {
+                    let response = JSON.parse(xmlHttp.responseText);
+                    if (response.Status === 0) {
+                        response.Answer.some(e => {
+                            if (e.type === 1) { // got ip Address.
+                                gMediaServerIP = e.data;
+                                return true;
+                            }
+                        });
+                    }
+                }
+                else {
+                    let response = JSON.parse(xmlHttp.responseText);
+                }
+            }
+        };
+    }
 
-	if (gRequest["no_showspinner"]) {
-		gShowSpinner = false;
-	}
+    if (gRequest['no_showspinner']) {
+        gShowSpinner = false;
+    }
 
-	if (gRequest["userevent"]) {
-		gUserEvent = true;
-	}
+    if (gRequest['userevent']) {
+        gUserEvent = true;
+    }
 
-	if (gRequest["sessionevent"]) {
-		gSessionEvent = true;
-	}
+    if (gRequest['sessionevent']) {
+        gSessionEvent = true;
+    }
 
-	if (gRequest["autologin"]) {
-		gAutologin = true;
-	}
+    if (gRequest['autologin']) {
+        gAutologin = true;
+    }
 
-	if (gRequest["bitrate"]) {
-		gBitRate = parseInt(gRequest["bitrate"]);
-	}
+    if (gRequest['bitrate']) {
+        gBitRate = parseInt(gRequest['bitrate'], 10);
+    }
 
-	if (gRequest["textroom"]) {
-		gAutoSubScribe = false;
-		gAutoPublish = false;
-		gUsingData = false;
-		gUsingVideo = false;
-		gUsingAudio = false;
-		gUsingMessageAPI = true;
-		$('#therevideo').hide();
-		$('#videos').remove();
-	}
+    if (gRequest['textroom']) {
+        gAutoSubScribe = false;
+        gAutoPublish = false;
+        gUsingData = false;
+        gUsingVideo = false;
+        gUsingAudio = false;
+        gUsingMessageAPI = true;
+        $('#therevideo').hide();
+        $('#videos').remove();
+    }
 
-	if (gRequest["preview"]) {
-		gPreviewLocal = true;
-		$('#testpreviewvideo').removeClass('hide').show();
-		BRTC_DeviceTest_Start({localvideoviewid: "testpreviewvideo"});
-		$('#unpublish').value = "Publish";
-	}
+    if (gRequest['preview']) {
+        gPreviewLocal = true;
+        $('#testpreviewvideo').removeClass('hide').show();
+        BRTC_DeviceTest_Start({localvideoviewid: 'testpreviewvideo'});
+        $('#unpublish').value = 'Publish';
+    }
 
-	if (gRequest["messageapi"]) {
-		gUsingMessageAPI = true;
-	}
+    if (gRequest['messageapi']) {
+        gUsingMessageAPI = true;
+    }
 
-	if (gRequest["volumemonitor"]) {
-		gVolumeMonitor = true;
-	}
+    if (gRequest['volumemonitor']) {
+        gVolumeMonitor = true;
+    }
 
-    if (gRequest["no_mirrorlocalvideo"]) {
+    if (gRequest['no_mirrorlocalvideo']) {
         gMirrorLocalVideo = false;
-	}
+    }
 
-    if (gRequest["reportmonitordata"]) {
+    if (gRequest['reportmonitordata']) {
         gReportMonitorData = true;
-	}
-    if (gRequest["reportenv"]) {
-        gReportEnv = gRequest["reportenv"];
-	}
+    }
+    if (gRequest['reportenv']) {
+        gReportEnv = gRequest['reportenv'];
+    }
 
-	if (gRequest["dynamicvideoview"]) {
+    if (gRequest['dynamicvideoview']) {
         gDynamicRemoteVideoView = true;
-	}
+    }
 
-    if (gRequest["log"]) {
+    if (gRequest['log']) {
         gLog = true;
     }
 
-    if (gRequest["displayname"]) {
-        gName = gRequest["displayname"];
+    if (gRequest['displayname']) {
+        gName = gRequest['displayname'];
     }
 
-	if (gRequest["test"]) {
+    if (gRequest['test']) {
         gLog = true;
-		// Add a 'mute' button
-		$('#herevideo').append('<button class="button" id="mute" style="z-index:10; position: absolute; bottom: 0px; left: 0px; margin: 15px;">Mute</button>');
-		$('#mute').click(function(){
-			gMuted = !gMuted;
-			BRTC_MuteMicphone(gMuted);
-		});
-		$('#herevideo').append('<button class="button" id="mutevideo" style="z-index:10; position: absolute; bottom: 0px; left: 70px; margin: 15px;">Video</button>');
-		$('#mutevideo').click(function(){
-			gVideoMuted = !gVideoMuted;
-			BRTC_MuteCamera(gVideoMuted);
-		});
-		// Add an 'unpublish' button
-		$('#herevideo').append('<button class="button" id="unpublish" style="z-index:10; position: absolute; bottom: 0px; right: 0px; margin: 15px;">Un/publish</button>');
-		$('#unpublish').click(function(){
-			if (gPublished) {
-				BRTC_StopPublish().then(()=> {
-					$('#unpublish').value = "Publish";
-					if (gPreviewLocal) {
-						BRTC_DeviceTest_Start({localvideoviewid: "testpreviewvideo"});
-					}
-				});
-				gPublished = false;
-			} else {
-				if (gPreviewLocal) {
-					BRTC_DeviceTest_Stop();
-				}
-				BRTC_StartPublish();
-				$('#unpublish').value = "unPublish";
-				gPublished = true;
-				gMuted = false;
-				gVideoMuted = false;
-			}
-		});
-		$('#herevideo').append('<button class="button" id="screen" style="z-index:10; position: absolute; top: 0px; left: 0px; margin: 15px;">Screen</button>');
-		$('#screen').click(function(){
-			BRTC_SwitchScreen();
-		});
+        // Add a 'mute' button
+        $('#herevideo').append('<button class="button" id="mute"'
+            + ' style="z-index:10; position: absolute; bottom: 0px; left: 0px; margin: 15px;">Mute</button>');
+        $('#mute').click(function () {
+            gMuted = !gMuted;
+            BRTC_MuteMicphone(gMuted);
+        });
+        $('#herevideo').append('<button class="button" id="mutevideo"'
+            + ' style="z-index:10; position: absolute; bottom: 0px; left: 70px; margin: 15px;">Video</button>');
+        $('#mutevideo').click(function () {
+            gVideoMuted = !gVideoMuted;
+            BRTC_MuteCamera(gVideoMuted);
+        });
+        // Add an 'unpublish' button
+        $('#herevideo').append('<button class="button" id="unpublish"'
+            + ' style="z-index:10; position: absolute; bottom: 0px; right: 0px; margin: 15px;">Un/publish</button>');
+        $('#unpublish').click(function () {
+            if (gPublished) {
+                BRTC_StopPublish().then(()=> {
+                    $('#unpublish').value = 'Publish';
+                    if (gPreviewLocal) {
+                        BRTC_DeviceTest_Start({localvideoviewid: 'testpreviewvideo'});
+                    }
+                });
+                gPublished = false;
+            } else {
+                if (gPreviewLocal) {
+                    BRTC_DeviceTest_Stop();
+                }
+                BRTC_StartPublish();
+                $('#unpublish').value = 'unPublish';
+                gPublished = true;
+                gMuted = false;
+                gVideoMuted = false;
+            }
+        });
+        $('#herevideo').append('<button class="button" id="screen"'
+            + ' style="z-index:10; position: absolute; top: 0px; left: 0px; margin: 15px;">Screen</button>');
+        $('#screen').click(function () {
+            BRTC_SwitchScreen();
+        });
 
-		var scriptEle = document.createElement("script");
-		scriptEle.src = 'https://code.bdstatic.com/npm/vconsole@3.3.4/dist/vconsole.min.js';
-		document.body.appendChild(scriptEle)
-		scriptEle.onload = function(){
-			window.vConsole = new VConsole();
-		}
+        var scriptEle = document.createElement('script');
+        scriptEle.src = 'https://code.bdstatic.com/npm/vconsole@3.3.4/dist/vconsole.min.js';
+        document.body.appendChild(scriptEle);
+        scriptEle.onload = function () {
+            window.vConsole = new VConsole();
+        };
 
-		$('#actions').removeClass('hide').show();
-		$('#audiodevice').removeClass('hide').show();
-		$('#audiooutputdevice').removeClass('hide').show();
-	}
+        $('#actions').removeClass('hide').show();
+        $('#audiodevice').removeClass('hide').show();
+        $('#audiooutputdevice').removeClass('hide').show();
+    }
 
-	$('#downloadapp').click(function(){
-		$('#barimg').removeClass('hide').show();
-	});
+    $('#downloadapp').click(function () {
+        $('#barimg').removeClass('hide').show();
+    });
 
-	$('#start').click(function() {
-			var input_roomname = $('#roomname').val();
-			var input_appid = $('#appid').val();
-			var input_token = $('#token').val();
-			var input_brtcserver = $('#brtcserver').val();
-			var input_rtmpserver = $('#rtmpserver').val();
-			var input_rtmpmixtemplate = $('#rtmpmixtemplate').val();
-			$('#twobar').remove();
-			$(this).attr('disabled', true).unbind('click');
-			BRTC_Start({
+    $('#start').click(function () {
+            var input_roomname = $('#roomname').val();
+            var input_appid = $('#appid').val();
+            var input_token = $('#token').val();
+            var input_brtcserver = $('#brtcserver').val();
+            var input_rtmpserver = $('#rtmpserver').val();
+            var input_rtmpmixtemplate = $('#rtmpmixtemplate').val();
+            $('#twobar').remove();
+            $(this).attr('disabled', true).unbind('click');
+            BRTC_Start({
                 debuglevel: gLog, // true, false, 'all', ['debug','log','error']
-				server: input_brtcserver,
-				appid: input_appid, 
-				token: input_token,
-				roomname: input_roomname,
-				videocodec: "h264",
-				userid: input_userid,
-				displayname: gName,
-				remotevideoviewid: "therevideo",
-				localvideoviewid: "herevideo",
-				remotevideoviewid2: "therevideo2",
-				remotevideoviewid3: "therevideo3",
-				remotevideoviewid4: "therevideo4",
-				remotevideoviewid5: "therevideo5",
-				mirrorlocalvideo: gMirrorLocalVideo,
-				aspublisher: gAsPublisher,
-				usingdatachannel: gUsingData,
-				usingvideo: gUsingVideo,
-				usingaudio: gUsingAudio,
-				receivingvideo: gReceivingVideo,
-				receivingaudio: gReceivingAudio,
-				bitrate: gBitRate,
-				screenbitrate: gBitRate,
-				showvideobps: gShowVideobps,
-				sharescreen: gShareScreen,
-				audiodeviceid: null,
-				videodeviceid: defaultDeviceID,
-				audiooutputdeviceid: null,
-				rtmpserver: input_rtmpserver,
-				rtmpmixtemplate: input_rtmpmixtemplate,
-				rtmpmix: gRtmpmix,
-				recording: gRecording,
-				autosubscribe: gAutoSubScribe,
-				autopublish: gAutoPublish,
-				autoresubscribing: !gAutoSubScribe,
-				linkdownupthreshold: 50,
-				waitpermissiontimeoutms: gWaitPermissionTimeOutMs,
-				reportmonitordata: gReportMonitorData,
-				reportenv: gReportEnv,
-				candidateip: gCandidateIP,
-				mediaserverip: gMediaServerIP,
-				videoprofile: gVideoProfile,
-				// videoprofile: "lowres","stdres","hires","fhdres","4kres","480x480@15"
-				// videoprofile:  {
+                server: input_brtcserver,
+                appid: input_appid,
+                token: input_token,
+                roomname: input_roomname,
+                videocodec: 'h264',
+                userid: input_userid,
+                displayname: gName,
+                remotevideoviewid: 'therevideo',
+                localvideoviewid: 'herevideo',
+                remotevideoviewid2: 'therevideo2',
+                remotevideoviewid3: 'therevideo3',
+                remotevideoviewid4: 'therevideo4',
+                remotevideoviewid5: 'therevideo5',
+                mirrorlocalvideo: gMirrorLocalVideo,
+                aspublisher: gAsPublisher,
+                usingdatachannel: gUsingData,
+                usingvideo: gUsingVideo,
+                usingaudio: gUsingAudio,
+                receivingvideo: gReceivingVideo,
+                receivingaudio: gReceivingAudio,
+                bitrate: gBitRate,
+                screenbitrate: gBitRate,
+                showvideobps: gShowVideobps,
+                sharescreen: gShareScreen,
+                audiodeviceid: null,
+                videodeviceid: defaultDeviceID,
+                audiooutputdeviceid: null,
+                rtmpserver: input_rtmpserver,
+                rtmpmixtemplate: input_rtmpmixtemplate,
+                rtmpmix: gRtmpmix,
+                recording: gRecording,
+                autosubscribe: gAutoSubScribe,
+                autopublish: gAutoPublish,
+                autoresubscribing: !gAutoSubScribe,
+                linkdownupthreshold: 50,
+                waitpermissiontimeoutms: gWaitPermissionTimeOutMs,
+                reportmonitordata: gReportMonitorData,
+                reportenv: gReportEnv,
+                candidateip: gCandidateIP,
+                mediaserverip: gMediaServerIP,
+                videoprofile: gVideoProfile,
+                // videoprofile: 'lowres','stdres','hires','fhdres','4kres','480x480@15'
+                // videoprofile:  {
                 //             'height': {'ideal': 240},
                 //             'width':  {'ideal': 240}
                 //         },
-				screensharevideoprofile: gScreenProfile,
-				// screensharevideoprofile: "lowres","stdres","hires","fhdres","4kres","1280x720"
-				linkdownevent: function() {
-					console.log("linkdownevent");
-				},
-				linkupevent: function() {
-					console.log("linkupevent");
-				},
-				userevent: gUserEvent,
-				userevent_joinedroom: function(id,display,attribute) {
-					console.log("userevent_joinedroom id: " + id + ", display: " + display + ", attribute:" + attribute);
-				},
-				userevent_leavingroom: function(id,display) {
-					console.log("userevent_leavingroom id: " + id + ", display: " + display);
-				},
-				sessionevent: gSessionEvent,
-				mediastate: function(medium,on) {
-					console.log("send medium " + medium +" is: " + on);
-				},
-				logintimeout: 10000,
-				logintimeoutevent: function() {
-					console.log("timeout");
-				},
-				showspinner: gShowSpinner,
-				shownovideo: true,
-				remotevideoloading: function(idx) {
-					console.log("remotevideoloading, index:"+ idx);
-				},
-				remotevideoon: function(idx) {
-					console.log("remotevideoon, index:"+ idx);
-				},
-				remotevideooff: function(idx) {
-					console.log("remotevideooff, index:"+ idx);
-				},
-				remotevideocoming: function(id,display,attribute) {
-					console.log("remotevideocoming, feedid:"+ id + ":" + display + ":" + attribute);
-					let sel = document.getElementById("feedid");
-					sel.options.add(new Option(display,id));
+                screensharevideoprofile: gScreenProfile,
+                // screensharevideoprofile: 'lowres','stdres','hires','fhdres','4kres','1280x720'
+                linkdownevent: function () {
+                    console.log('linkdownevent');
+                },
+                linkupevent: function () {
+                    console.log('linkupevent');
+                },
+                userevent: gUserEvent,
+                userevent_joinedroom: function (id, display, attribute) {
+                    console.log('userevent_joinedroom id: ' + id
+                        + ', display: ' + display + ', attribute:' + attribute);
+                },
+                userevent_leavingroom: function (id, display) {
+                    console.log('userevent_leavingroom id: ' + id + ', display: ' + display);
+                },
+                sessionevent: gSessionEvent,
+                mediastate: function (medium, on) {
+                    console.log('send medium ' + medium + ' is: ' + on);
+                },
+                logintimeout: 10000,
+                logintimeoutevent: function () {
+                    console.log('timeout');
+                },
+                showspinner: gShowSpinner,
+                shownovideo: true,
+                remotevideoloading: function (idx) {
+                    console.log('remotevideoloading, index:' + idx);
+                },
+                remotevideoon: function (idx) {
+                    console.log('remotevideoon, index:' + idx);
+                },
+                remotevideooff: function (idx) {
+                    console.log('remotevideooff, index:' + idx);
+                },
+                remotevideocoming: function (id, display, attribute) {
+                    console.log('remotevideocoming, feedid:' + id + ':' + display + ':' + attribute);
+                    let sel = document.getElementById('feedid');
+                    sel.options.add(new Option(display, id));
 
-					if (!gAutoSubScribe && gDynamicRemoteVideoView) {
-						$('#manualvideo').append('<div style="width: 100%;height: 100%;" id="videoremote_' + id + '"></div>');
-						BRTC_SubscribeStreaming('videoremote_' + id, id);
-					}
-				},
-				remotevideoleaving: function(id) {
-					console.log("remotevideoleaving, feedid:"+ id);
-					if (!gAutoSubScribe && gDynamicRemoteVideoView) {
-						$('#videoremote_' + id).remove();
-					}
-				},
-				remotevideounpublished: function(id) {
-					console.log("remotevideounpublished, feedid:"+ id);
-					if (!gAutoSubScribe && gDynamicRemoteVideoView) {
-						$('#videoremote_' + id).remove();
-					}
-				},
-				remotedata: function(data,label) {
-					console.log("got remote data:"+ data);
-					$('#remotedata').append(data);
+                    if (!gAutoSubScribe && gDynamicRemoteVideoView) {
+                        $('#manualvideo').append('<div style="width: 100%;height: 100%;" id="videoremote_'
+                            + id + '"></div>');
+                        BRTC_SubscribeStreaming('videoremote_' + id, id);
+                    }
+                },
+                remotevideoleaving: function (id) {
+                    console.log('remotevideoleaving, feedid:' + id);
+                    if (!gAutoSubScribe && gDynamicRemoteVideoView) {
+                        $('#videoremote_' + id).remove();
+                    }
+                },
+                remotevideounpublished: function (id) {
+                    console.log('remotevideounpublished, feedid:' + id);
+                    if (!gAutoSubScribe && gDynamicRemoteVideoView) {
+                        $('#videoremote_' + id).remove();
+                    }
+                },
+                remotedata: function (data, label) {
+                    console.log('got remote data:' + data);
+                    $('#remotedata').append(data);
 
-					if (gDoPong) {
-						BRTC_SendData("pong data.");
-					} else if (gDoPing) {
-						setTimeout(function() {
-							BRTC_SendData("new ping.");
-						}, gPingRepeatTime);
-					}
-				},
-				success: function() {
-					$('#start').removeAttr('disabled').html("退出")
-						.click(function() {
-							$('#start').attr('disabled', true);
-							Cookies.set("state",'init');
-							BRTC_Stop();
-						});
-					$('#details').remove();
-					$('#rtc_logo_img').remove();
-					$('#videos').removeClass('hide').show();
-					if (($('#videodevice').get(0).options.length > 1) && gAsPublisher && !gShareScreen) {
-						$('#actions').removeClass('hide').show();
-					}
+                    if (gDoPong) {
+                        BRTC_SendData('pong data.');
+                    } else if (gDoPing) {
+                        setTimeout(function () {
+                            BRTC_SendData('new ping.');
+                        }, gPingRepeatTime);
+                    }
+                },
+                success: function () {
+                    $('#start').removeAttr('disabled').html('退出')
+                        .click(function () {
+                            $('#start').attr('disabled', true);
+                            Cookies.set('state', 'init');
+                            BRTC_Stop();
+                        });
+                    $('#details').remove();
+                    $('#rtc_logo_img').remove();
+                    $('#videos').removeClass('hide').show();
+                    if (($('#videodevice').get(0).options.length > 1) && gAsPublisher && !gShareScreen) {
+                        $('#actions').removeClass('hide').show();
+                    }
 
-					if (($('#audiodevice').get(0).options.length > 2) && gAsPublisher) {
-						$('#actions').removeClass('hide').show();
-						$('#audiodevice').removeClass('hide').show();
-					}
+                    if (($('#audiodevice').get(0).options.length > 2) && gAsPublisher) {
+                        $('#actions').removeClass('hide').show();
+                        $('#audiodevice').removeClass('hide').show();
+                    }
 
-					if ($('#audiooutputdevice').get(0).options.length > 2) {
-						$('#actions').removeClass('hide').show();
-						$('#audiooutputdevice').removeClass('hide').show();
-					}
+                    if ($('#audiooutputdevice').get(0).options.length > 2) {
+                        $('#actions').removeClass('hide').show();
+                        $('#audiooutputdevice').removeClass('hide').show();
+                    }
 
-					if (gDoPing) {
-						setTimeout(function() {
-							BRTC_SendData("ping data.");
-						}, gPingStartupTime);
-					}
+                    if (gDoPing) {
+                        setTimeout(function () {
+                            BRTC_SendData('ping data.');
+                        }, gPingStartupTime);
+                    }
 
-					if (gAutologin) {
-						Cookies.set("state",'playing');
-					}
+                    if (gAutologin) {
+                        Cookies.set('state', 'playing');
+                    }
 
-					var ignore_rooms_for_sendmsg = [
-						'7a5f1d54-e482-4e8e-8610-605d296fc371',
-						'3021725c-fdd7-426d-aee0-9f84b7e6336f',
-						'0cc3b3cb-d07e-4cdf-9ee3-30c5f2b6e361',
-						'b1092ce6-db7c-4bee-8b9a-28da5021d0a0',
-						'ee2e3738-45c5-4027-a6ae-39dea09999f7',
-						'65a5aec3-6450-4747-8484-97028f9cc865',
-						'b0b3d4dd-467d-454f-93d9-678746a7570c',
-						'703cda41-d6a2-4934-a7de-d38b99ee137b',
-						'f2db08ed-d90a-40d7-9adf-d0ae1d598fa4',
-						'2df29610-0fb8-4bbe-877c-51b4fc3515f6',
-						'f5eba0ec-674a-4a21-bff5-e0441b451759',
-					];
+                    var ignore_rooms_for_sendmsg = [
+                        '7a5f1d54-e482-4e8e-8610-605d296fc371',
+                        '3021725c-fdd7-426d-aee0-9f84b7e6336f',
+                        '0cc3b3cb-d07e-4cdf-9ee3-30c5f2b6e361',
+                        'b1092ce6-db7c-4bee-8b9a-28da5021d0a0',
+                        'ee2e3738-45c5-4027-a6ae-39dea09999f7',
+                        '65a5aec3-6450-4747-8484-97028f9cc865',
+                        'b0b3d4dd-467d-454f-93d9-678746a7570c',
+                        '703cda41-d6a2-4934-a7de-d38b99ee137b',
+                        'f2db08ed-d90a-40d7-9adf-d0ae1d598fa4',
+                        '2df29610-0fb8-4bbe-877c-51b4fc3515f6',
+                        'f5eba0ec-674a-4a21-bff5-e0441b451759',
+                    ];
 
-					if (ignore_rooms_for_sendmsg.indexOf(input_roomname) < 0) {
-						$('#msg').removeClass('hide').show();
-						$('#sendmsg').removeClass('hide').show();
-					}
+                    if (ignore_rooms_for_sendmsg.indexOf(input_roomname) < 0) {
+                        $('#msg').removeClass('hide').show();
+                        $('#sendmsg').removeClass('hide').show();
+                    }
 
-					if (gUsingMessageAPI) {
-						BRTC_SetUserAttribute("{name:'red',tel:'123456789'}");
-					}
+                    if (gUsingMessageAPI) {
+                        BRTC_SetUserAttribute('{name:"red",tel:"123456789"}');
+                    }
 
-					if (gVolumeMonitor) {
-						setInterval(function() {
-							var r = BRTC_GetRemoteAudioLevels();
+                    if (gVolumeMonitor) {
+                        setInterval(function () {
+                            var r = BRTC_GetRemoteAudioLevels();
 
-							r.forEach(e => {
-								if (e.volume == 0) {
-									console.error("GetRemoteAudioLevels volume is 0: " + e);
-									console.error(e);
-								}
-							});
-						}, 5000);
-					}
-				},
-				localvideopublishing: function() {
-					$('#herevideo').block({
-										message: '<b>Publishing...</b>',
-										css: {
-											border: 'none',
-											backgroundColor: 'transparent',
-											color: 'white'
-										}
-									});
-				},
-				localvideopublished_ok: function() {
-					$('#herevideo').unblock();
-				},
-				error: function(error) {
-					alert("BRTC: " + error);
-					window.location.reload();
-					$('#start').removeAttr('disabled');
-				},
-				destroyed: function(error) {
-					window.location.reload();
-				},
-				onlocalstream: function(stream,name) {
-					//local stream for display sonic wave
-					console.log("onlocalstream name: " + name);
-				},
-				onlocalstream_end: function(name) {
-					//end event of local stream
-					console.log("onlocalstream_end name: " + name);
-				},
-				// localvideopublished_closed: function() {
-				// 	console.log("localvideopublished_closed by server, please do StartPublish again");
-				// },
-				remotevideo_closed:  function(feedid) {
-					console.log("remotevideo_closed(feedid: " + feedid + ") by server, please do SubScribing again");
-				},
-				onmessage: function(msg) {
-					// event onmessage.
-					console.log("onmessage id: " + msg.id + " data: "+ msg.data);
-					$('#remotedata').append(msg.data);
-				},
-				onattribute: function(a) {
-					// event onattribute
-					console.log("onattribute id: " + a.id + " attribute: "+ a.attribute);
-				},
-			});
-			Cookies.set("roomname_at_aapid_page",input_roomname);
-			Cookies.set("appid",input_appid);
-			Cookies.set("userid",input_userid);
-			Cookies.set("token",input_token);
-			Cookies.set("brtcserver",input_brtcserver);
-			Cookies.set("rtmpserver",input_rtmpserver);
-			Cookies.set("rtmpmixtemplate",input_rtmpmixtemplate);
-		});
+                            r.forEach(e => {
+                                if (e.volume === 0) {
+                                    console.error('GetRemoteAudioLevels volume is 0: ' + e);
+                                    console.error(e);
+                                }
+                            });
+                        }, 5000);
+                    }
+                },
+                localvideopublishing: function () {
+                    $('#herevideo').block({
+                        message: '<b>Publishing...</b>',
+                        css: {
+                            border: 'none',
+                            backgroundColor: 'transparent',
+                            color: 'white'
+                        }
+                    });
+                },
+                localvideopublished_ok: function () {
+                    $('#herevideo').unblock();
+                },
+                error: function (error) {
+                    alert('BRTC: ' + error);
+                    window.location.reload();
+                    $('#start').removeAttr('disabled');
+                },
+                destroyed: function (error) {
+                    window.location.reload();
+                },
+                onlocalstream: function (stream, name) {
+                    // local stream for display sonic wave
+                    console.log('onlocalstream name: ' + name);
+                },
+                onlocalstream_end: function (name) {
+                    // end event of local stream
+                    console.log('onlocalstream_end name: ' + name);
+                },
+                // localvideopublished_closed: function() {
+                //     console.log('localvideopublished_closed by server, please do StartPublish again');
+                // },
+                remotevideo_closed: function (feedid) {
+                    console.log('remotevideo_closed(feedid: ' + feedid + ') by server, please do SubScribing again');
+                },
+                onmessage: function (msg) {
+                    // event onmessage.
+                    console.log('onmessage id: ' + msg.id + ' data: ' + msg.data);
+                    $('#remotedata').append(msg.data);
+                },
+                onattribute: function (a) {
+                    // event onattribute
+                    console.log('onattribute id: ' + a.id + ' attribute: ' + a.attribute);
+                },
+            });
+            Cookies.set('roomname_at_aapid_page', input_roomname);
+            Cookies.set('appid', input_appid);
+            Cookies.set('userid', input_userid);
+            Cookies.set('token', input_token);
+            Cookies.set('brtcserver', input_brtcserver);
+            Cookies.set('rtmpserver', input_rtmpserver);
+            Cookies.set('rtmpmixtemplate', input_rtmpmixtemplate);
+        });
     function loadDevice() {
         let callback = {
             success: function (devices) {
-				let sel = document.getElementById("videodevice");
+                let sel = document.getElementById('videodevice');
 
-				while (sel.options.length){
-					sel.remove(0);
-				}
-
-                for (let i = 0;i < devices.length; i++){
-					sel.options.add(new Option(devices[i].label, devices[i].deviceId));
-					if (devices[i].label.includes('FaceTime')) {
-						defaultDeviceID = devices[i].deviceId;
-						sel.options.selectedIndex = i;
-					}
+                while (sel.options.length) {
+                    sel.remove(0);
                 }
 
-                $('#videodevice').change( function(){
-					BRTC_ReplaceVideo($('#videodevice').val());
-					defaultDeviceID = $('#videodevice').val();
-					BRTC_SetParamSettings({videodeviceid: defaultDeviceID});
+                for (let i = 0; i < devices.length; i++) {
+                    sel.options.add(new Option(devices[i].label, devices[i].deviceId));
+                    if (devices[i].label.includes('FaceTime')) {
+                        defaultDeviceID = devices[i].deviceId;
+                        sel.options.selectedIndex = i;
+                    }
+                }
+
+                $('#videodevice').change(function () {
+                    BRTC_ReplaceVideo($('#videodevice').val());
+                    defaultDeviceID = $('#videodevice').val();
+                    BRTC_SetParamSettings({videodeviceid: defaultDeviceID});
                 });
             }
-        }
+        };
         BRTC_GetVideoDevices(callback);
 
         let audio_callback = {
             success: function (devices) {
-				let sel = document.getElementById("audiodevice");
+                let sel = document.getElementById('audiodevice');
 
-				while (sel.options.length){
-					sel.remove(0);
-				}
-
-                for (let i = 0;i < devices.length; i++){
-					sel.options.add(new Option(devices[i].label, devices[i].deviceId));
+                while (sel.options.length) {
+                    sel.remove(0);
                 }
 
-                $('#audiodevice').change( function(){
-					BRTC_ReplaceAudio($('#audiodevice').val());
-					BRTC_SetParamSettings({audiodeviceid: $('#audiodevice').val()});
+                for (let i = 0; i < devices.length; i++) {
+                    sel.options.add(new Option(devices[i].label, devices[i].deviceId));
+                }
+
+                $('#audiodevice').change(function () {
+                    BRTC_ReplaceAudio($('#audiodevice').val());
+                    BRTC_SetParamSettings({audiodeviceid: $('#audiodevice').val()});
                 });
             }
-        }
-		BRTC_GetAudioInputDevices(audio_callback);
+        };
+        BRTC_GetAudioInputDevices(audio_callback);
 
         let audio_output_callback = {
             success: function (devices) {
-				let sel = document.getElementById("audiooutputdevice");
+                let sel = document.getElementById('audiooutputdevice');
 
-				while (sel.options.length){
-					sel.remove(0);
-				}
-
-                for (let i = 0;i < devices.length; i++){
-					sel.options.add(new Option(devices[i].label, devices[i].deviceId));
+                while (sel.options.length) {
+                    sel.remove(0);
                 }
 
-                $('#audiooutputdevice').change( function(){
+                for (let i = 0; i < devices.length; i++) {
+                    sel.options.add(new Option(devices[i].label, devices[i].deviceId));
+                }
+
+                $('#audiooutputdevice').change(function () {
                     BRTC_SetAudioOutputDevice($('#audiooutputdevice').val());
                 });
             }
-        }
-		BRTC_GetAudioOutputDevices(audio_output_callback);
+        };
+        BRTC_GetAudioOutputDevices(audio_output_callback);
 
         let devices_callback = {
             success: function (devices) {
-				console.log("all devices length: " + devices.length);
+                console.log('all devices length: ' + devices.length);
             }
-        }
+        };
 
-		BRTC_SetDevicesChangeListener(function (event) {
-				console.log("on devices event: " + event);
-				// BRTC_GetAllDevices(devices_callback);
-				BRTC_GetVideoDevices(callback);
-				BRTC_GetAudioInputDevices(audio_callback);
-				BRTC_GetAudioOutputDevices(audio_output_callback);
+        BRTC_SetDevicesChangeListener(function (event) {
+                console.log('on devices event: ' + event);
+                // BRTC_GetAllDevices(devices_callback);
+                BRTC_GetVideoDevices(callback);
+                BRTC_GetAudioInputDevices(audio_callback);
+                BRTC_GetAudioOutputDevices(audio_output_callback);
             });
     }
 
     if (gAsPublisher) {
-		setTimeout(function() {
-			loadDevice();
-		}, 300);
-	};
+        setTimeout(function () {
+            loadDevice();
+        }, 300);
+    };
 
-	if (gAutologin) {
-		if (gState === 'playing') {
-			$('#login').hide();
-			$('#auto').removeClass('hide').show();
-			$('#continueplaying').click(function (){
-				$('#login').removeClass('hide').show();
-				$('#start').trigger('click');
-			});
-		}
-	}
+    if (gAutologin) {
+        if (gState === 'playing') {
+            $('#login').hide();
+            $('#auto').removeClass('hide').show();
+            $('#continueplaying').click(function () {
+                $('#login').removeClass('hide').show();
+                $('#start').trigger('click');
+            });
+        }
+    }
 
-	['manualvideo', 'therevideo', 'therevideo1', 'therevideo2',
-	 'therevideo3', 'therevideo4', 'therevideo5'].forEach( i =>{
-		$('#' + i ).dblclick(function (){
-			if (document.fullscreenElement) {
-				if(document.webkitIsFullScreen){
-					document.webkitCancelFullScreen();
-				}
-				else if(document.mozFullScreen){
-					document.mozCancelFullScreen();
-				}
-				else if(document.fullScreen){
-					document.cancelFullScreen();
-				}
-			} else {
-				$('#' + i).get(0).requestFullscreen();
-			}
-		})
-	});
-
-	});
+    ['manualvideo', 'therevideo', 'therevideo1', 'therevideo2',
+        'therevideo3', 'therevideo4', 'therevideo5'].forEach(i =>{
+            $('#' + i).dblclick(function () {
+                if (document.fullscreenElement) {
+                    if (document.webkitIsFullScreen) {
+                        document.webkitCancelFullScreen();
+                    }
+                    else if (document.mozFullScreen) {
+                        document.mozCancelFullScreen();
+                    }
+                    else if (document.fullScreen) {
+                        document.cancelFullScreen();
+                    }
+                } else {
+                    $('#' + i).get(0).requestFullscreen();
+                }
+            });
+        });
+});
 </script>
 
 <div class="container" id="login">
-		<div class="col-md-12" style="text-align: center">
-			<img src="https://code.bdstatic.com/npm/baidurtc@0.7.15/demo/img/rtc_logo.png" id="rtc_logo_img"/>
-			<div >
-				<div class = "rtc_title_font_color" >百度智能云RTC
+        <div class="col-md-12" style="text-align: center">
+            <img src="https://code.bdstatic.com/npm/baidurtc@0.7.15/demo/img/rtc_logo.png" id="rtc_logo_img">
+            <div >
+                <div class = "rtc-title-font-color" >百度智能云RTC
+                </div>
+            </div>
 
-				</div>
-			</div>
-
-			<div id="details">
-				<div class="row" >
-					<div class="col-md-12" >
-						<div >
-							<div >
-								<div class="rtc_font_color" >请输入房间号/AppID</div>
-							</div>
-							<input autocomplete="off" class="rtc_input_line" autocomplete="off" type="text" placeholder="set room id" id="roomname" size="40" value="8888"></input><br>
-							<input autocomplete="off" class="rtc_input_line hide" autocomplete="off" type="text" placeholder="set user id" id="userid" size="40" value="10086"></input><br>
-							<input autocomplete="off" class="rtc_input_line" autocomplete="off" type="text" placeholder="set app id" id="appid" size="40" value="appid"></input><br>
-							<input autocomplete="off" class="rtc_input_line hide" autocomplete="off" type="text" placeholder="token" id="token" size="80" value="token"></input><br>
-							<input autocomplete="off" class="rtc_input_line hide" autocomplete="off" type="text" placeholder="wss://rtc2.exp.bcelive.com/janus" id="brtcserver" size="40" value="wss://rtc2.exp.bcelive.com/janus"></input><br>
-							<input autocomplete="off" class="rtc_input_line hide" autocomplete="off" type="text" placeholder="rtmp://" id="rtmpserver" size="40" value=""></input><br>
-							<input autocomplete="off" class="rtc_input_line hide" autocomplete="off" type="text" placeholder="" id="rtmpmixtemplate" size="40" value=""></input>
-					</div>
-					</div>
-				</div>
-			</div>
-			<button class="button big blue" autocomplete="off" id="start" style="width:300px">进入房间</button>
-			<div class="hide rtc_font_color" id="actions">切换摄像头<select class="rtc_font_color"  id="videodevice"></select></br>
-			切换麦克风<select class="hide rtc_font_color"  id="audiodevice"></select></br>
-			切换扬声器<select class="rtc_font_color"  id="audiooutputdevice"></select>
-			</div>
-			<div class="hide rtc_font_color" id="pullvideo">选择拉流<select class="rtc_font_color"  id="feedid"></select>
-			</div>
-			<div id="twobar">
-				<div style="height: 50px;"></div>
-				<div class="rtc_font_color" id="downloadapp">iOS/安卓App下载(密码brtc):</div>
-				<a href="d.html">
-				<img class="hide" src="https://code.bdstatic.com/npm/baidurtc@0.7.15/demo/bar.png" style="width: 200px; height: 200px;" id="barimg"/>
-				</a>
-			</div>
-			<div class="m-netcall hide" id="videos">
-				<div  id="herevideo"></div>
-			</div>
-		</div>
-		<div class="hide" style="width: 70%;height: 500px;" id="manualvideo" title="双击全屏"></div>
-		<div class="hide" style="width: 70%;height: 500px;" id="testpreviewvideo"></div>
-		<div style="width: 70%;height: 500px;"id="therevideo" title="双击全屏"></div>
-		<br/><br/><br/><br/><br/><br/>
-		<div style="width: 70%;height: 50px;" class="rtc_font_color" id="remotedata"></div>
-		<textarea class="hide" name="msg" id="msg" style="background-color:White;border-color:#C0C0FF;border-width:1px;border-style:Solid;height:50px;width:1100px;">众里寻他千百度~</textarea><br>
-		<button class="hide" onclick="BRTC_SendMessageToUser(document.getElementById('msg').value)" id="sendmsg">发送消息</button>
-		<div style="width: 70%;height: 500px;" id="therevideo2" title="双击全屏"></div>
-		<div style="width: 70%;height: 500px;" id="therevideo3" title="双击全屏"></div>
-		<div style="width: 70%;height: 500px;" id="therevideo4" title="双击全屏"></div>
-		<div style="width: 70%;height: 500px;" id="therevideo5" title="双击全屏"></div>
+            <div id="details">
+                <div class="row" >
+                    <div class="col-md-12" >
+                        <div >
+                            <div >
+                                <div class="rtc-font-color" >请输入房间号/AppID</div>
+                            </div>
+                            <input autocomplete="off" class="rtc-input-line" autocomplete="off" type="text" placeholder="set room id" id="roomname" size="40" value="8888"></input><br>
+                            <input autocomplete="off" class="rtc-input-line hide" autocomplete="off" type="text" placeholder="set user id" id="userid" size="40" value="10086"></input><br>
+                            <input autocomplete="off" class="rtc-input-line" autocomplete="off" type="text" placeholder="set app id" id="appid" size="40" value="appid"></input><br>
+                            <input autocomplete="off" class="rtc-input-line hide" autocomplete="off" type="text" placeholder="token" id="token" size="80" value="token"></input><br>
+                            <input autocomplete="off" class="rtc-input-line hide" autocomplete="off" type="text" placeholder="wss://rtc2.exp.bcelive.com/janus" id="brtcserver" size="40" value="wss://rtc2.exp.bcelive.com/janus"></input><br>
+                            <input autocomplete="off" class="rtc-input-line hide" autocomplete="off" type="text" placeholder="rtmp://" id="rtmpserver" size="40" value=""></input><br>
+                            <input autocomplete="off" class="rtc-input-line hide" autocomplete="off" type="text" placeholder="" id="rtmpmixtemplate" size="40" value=""></input>
+                    </div>
+                    </div>
+                </div>
+            </div>
+            <button class="button big blue" type="button" autocomplete="off" id="start" style="width:300px">进入房间</button>
+            <div class="hide rtc-font-color" id="actions">切换摄像头<select class="rtc-font-color"  id="videodevice"></select></br>
+            切换麦克风<select class="hide rtc-font-color"  id="audiodevice"></select></br>
+            切换扬声器<select class="rtc-font-color"  id="audiooutputdevice"></select>
+            </div>
+            <div class="hide rtc-font-color" id="pullvideo">选择拉流<select class="rtc-font-color"  id="feedid"></select>
+            </div>
+            <div id="twobar">
+                <div style="height: 50px;"></div>
+                <div class="rtc-font-color" id="downloadapp">iOS/安卓App下载(密码brtc):</div>
+                <a href="d.html">
+                <img class="hide" src="https://code.bdstatic.com/npm/baidurtc@0.7.15/demo/bar.png" style="width: 200px; height: 200px;" id="barimg">
+                </a>
+            </div>
+            <div class="m-netcall hide" id="videos">
+                <div  id="herevideo"></div>
+            </div>
+        </div>
+        <div class="hide" style="width: 70%;height: 500px;" id="manualvideo" title="双击全屏"></div>
+        <div class="hide" style="width: 70%;height: 500px;" id="testpreviewvideo"></div>
+        <div style="width: 70%;height: 500px;"id="therevideo" title="双击全屏"></div>
+        <br><br><br><br><br><br>
+        <div style="width: 70%;height: 50px;" class="rtc-font-color" id="remotedata"></div>
+        <textarea class="hide" name="msg" id="msg" style="background-color:White;border-color:#C0C0FF;border-width:1px;border-style:Solid;height:50px;width:1100px;">众里寻他千百度~</textarea><br>
+        <button class="hide" type="button" onclick="BRTC_SendMessageToUser(document.getElementById('msg').value)" id="sendmsg">发送消息</button>
+        <div style="width: 70%;height: 500px;" id="therevideo2" title="双击全屏"></div>
+        <div style="width: 70%;height: 500px;" id="therevideo3" title="双击全屏"></div>
+        <div style="width: 70%;height: 500px;" id="therevideo4" title="双击全屏"></div>
+        <div style="width: 70%;height: 500px;" id="therevideo5" title="双击全屏"></div>
 </div>
 <div class="hide" id="auto">
-	<div class="rtc_title_font_color" id="continueplaying" style="width:500px; text-align:center">拉流播放时请不要刷新页面，点击[继续播放]-></div>
+    <div class="rtc-title-font-color" id="continueplaying" style="width:500px; text-align:center">拉流播放时请不要刷新页面，点击[继续播放]-></div>
 </div>
 
 </body>
