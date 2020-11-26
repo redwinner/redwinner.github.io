@@ -377,6 +377,11 @@
         console.log("Token:" + token);
 
         $('#token').val(token);
+        $('#url').val('https://redwinner.github.io/brtc/brtc.html?appid=' + appId +
+                      '&roomname=' + roomName +
+                      '&listener_only=1' +
+                      '&userid=' + userId +
+                      '&token=' + token);
     }
 
     function generateTokenInner(version, appId, appKey, roomName, userId, startTs, expiredTs) {
@@ -466,6 +471,9 @@
                     </div>
                     <div class="col-md-6" >
                         <input autocomplete="off" class="rtc_input_line" type="text" placeholder="token value" id="token" size="80" readonly></input>
+                    </div>
+                    <div class="col-md-6" >
+                        <input autocomplete="off" class="rtc_input_line" type="text" placeholder="https://" id="url" size="200" readonly></input>
                     </div>
             </div>
         </div>
