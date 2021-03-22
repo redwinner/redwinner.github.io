@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" >
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery@2.1.0/dist/jquery.min.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery-blockui@2.7.0/jquery.blockUI.js" ></script>
-<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@1.0.1/dist/baidu.rtc.sdk.js" ></script>
+<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@1.1.0/dist/baidu.rtc.sdk.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@1.0.1/demo/js.cookie.js"></script>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/bootswatch@3.3.7/cerulean/bootstrap.min.css" type="text/css">
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/baidurtc@1.0.1/demo/css/demo.css" type="text/css">
@@ -94,6 +94,7 @@ var gReportEnv = 'online';
 var gDynamicRemoteVideoView = false;
 var gLog = false;
 var gName = 'brtc webclient';
+var gMultiStreamSDK = false;
 
 var gMuted = false;
 var gVideoMuted = false;
@@ -263,26 +264,6 @@ $(document).ready(function () {
                 return;
             }
         }
-        xmlHttp.open('GET', 'https://dns.google.com/resolve?name=' + mediaServerDN + '&type=A', true);
-        xmlHttp.send();
-        xmlHttp.onreadystatechange = function () {
-            if (xmlHttp.readyState === 4) {
-                if (xmlHttp.status === 200) {
-                    let response = JSON.parse(xmlHttp.responseText);
-                    if (response.Status === 0) {
-                        response.Answer.some(e => {
-                            if (e.type === 1) { // got ip Address.
-                                gMediaServerIP = e.data;
-                                return true;
-                            }
-                        });
-                    }
-                }
-                else {
-                    let response = JSON.parse(xmlHttp.responseText);
-                }
-            }
-        };
 
         xmlHttp.open('GET', 'https://203.107.1.1/183659/d?host=' + mediaServerDN, true);
         xmlHttp.send();
@@ -369,6 +350,10 @@ $(document).ready(function () {
 
     if (gRequest['autoplaymuted']) {
         gAutoPlayMuted = true;
+    }
+
+    if (gRequest['multistreamsdk']) {
+        gMultiStreamSDK = true;
     }
 
     if (gRequest['test']) {
@@ -494,6 +479,7 @@ $(document).ready(function () {
                 //         },
                 screensharevideoprofile: gScreenProfile,
                 // screensharevideoprofile: 'lowres','stdres','hires','fhdres','4kres','1280x720'
+                multistream: gMultiStreamSDK,
                 linkdownevent: function () {
                     console.log('linkdownevent');
                 },
