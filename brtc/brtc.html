@@ -95,6 +95,7 @@ var gDynamicRemoteVideoView = false;
 var gLog = false;
 var gName = 'brtc webclient';
 var gMultiStreamSDK = false;
+var gVideoCodec = 'h264'; // 'vp8', 'vp9', 'h263'
 
 var gMuted = false;
 var gVideoMuted = false;
@@ -356,6 +357,10 @@ $(document).ready(function () {
         gMultiStreamSDK = true;
     }
 
+    if (gRequest['videocodec']) {
+        gVideoCodec = gRequest['videocodec'];
+    }
+
     if (gRequest['test']) {
         gLog = true;
         // Add a 'mute' button
@@ -433,7 +438,7 @@ $(document).ready(function () {
                 appid: input_appid,
                 token: input_token,
                 roomname: input_roomname,
-                videocodec: 'h264',
+                videocodec: gVideoCodec, // 'h264', 'vp8', 'vp9', 'h263'
                 userid: input_userid,
                 displayname: gName,
                 remotevideoviewid: 'therevideo',
