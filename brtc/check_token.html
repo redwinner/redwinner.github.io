@@ -356,8 +356,12 @@ function CheckToken(token, roomname, userid, appid, appkey)
 	var result = hex_hmac_sha1(appkey, 'ACS' + appid + ts + randomString + roomname + userid + expectTs);
 
 	if (result === signature) {
-		console.log("check token is OK");
-		alert('Token is OK.');
+		   console.log("check token is OK");
+    if (Date.parse(new Date())/1000 >= parseInt(expectTs, 10)) {
+      alert('Token is OK, But expectTs: ' + expectTs + ' <  Now(): ' + Date.parse(new Date())/1000 + ' is expired. expectTs should be UNIX timestamp. ');
+    } else {
+      alert('Token is OK.');
+    }
 	} else {
 		console.log("check token failed.");
 		alert('Token check Failed.');
