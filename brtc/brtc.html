@@ -85,6 +85,8 @@ var gAutologin = false;
 // 'playing'
 var gState  = 'init';
 var gBitRate = 1500;
+var gAudioBitRate = null;
+var gAudioStereo = false;
 var gPreviewLocal = false;
 var gUsingMessageAPI = false;
 var gVolumeMonitor = false;
@@ -300,6 +302,15 @@ $(document).ready(function () {
         gBitRate = parseInt(gRequest['bitrate'], 10);
     }
 
+    if (gRequest['audiobitrate']) {
+        gAudioBitRate = parseInt(gRequest['audiobitrate'], 10);
+        gAudioStereo = true;
+    }
+
+    if (gRequest['audiostereo']) {
+        gAudioStereo = true;
+    }
+
     if (gRequest['textroom']) {
         gAutoSubScribe = false;
         gAutoPublish = false;
@@ -456,6 +467,8 @@ $(document).ready(function () {
                 receivingaudio: gReceivingAudio,
                 bitrate: gBitRate,
                 screenbitrate: gBitRate,
+                audiobitrate: gAudioBitRate,
+                audiostereo: gAudioStereo,
                 showvideobps: gShowVideobps,
                 sharescreen: gShareScreen,
                 audiodeviceid: null,
