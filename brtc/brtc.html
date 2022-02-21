@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" >
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery@2.1.0/dist/jquery.min.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery-blockui@2.7.0/jquery.blockUI.js" ></script>
-<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@1.1.7/dist/baidu.rtc.sdk.js" ></script>
+<script type="text/javascript" src="https://brtc-sdk.cdn.bcebos.com/npm/baidurtc@1.1.11/baidu.rtc.sdk.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@1.0.1/demo/js.cookie.js"></script>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/bootswatch@3.3.7/cerulean/bootstrap.min.css" type="text/css">
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/baidurtc@1.0.1/demo/css/demo.css" type="text/css">
@@ -98,6 +98,7 @@ var gLog = false;
 var gName = 'brtc webclient';
 var gMultiStreamSDK = false;
 var gVideoCodec = 'h264'; // 'vp8', 'vp9', 'h263', 'h265', 'h266', 'av1'
+var gAudioCodec = ''; // 'opus', 'pcmu', 'pcma', 'g722', 'isac16', 'isac32'
 
 var gMuted = false;
 var gVideoMuted = false;
@@ -372,6 +373,10 @@ $(document).ready(function () {
         gVideoCodec = gRequest['videocodec'];
     }
 
+    if (gRequest['audiocodec']) {
+        gAudioCodec = gRequest['audiocodec'];
+    }
+
     if (gRequest['test']) {
         gLog = true;
         // Add a 'mute' button
@@ -450,6 +455,7 @@ $(document).ready(function () {
                 token: input_token,
                 roomname: input_roomname,
                 videocodec: gVideoCodec, // 'h264', 'vp8', 'vp9', 'h263', 'h265', 'h266', 'av1'
+                audiocodec: gAudioCodec, //'opus', 'pcmu', 'pcma', 'g722', 'isac16', 'isac32'
                 userid: input_userid,
                 displayname: gName,
                 remotevideoviewid: 'therevideo',
