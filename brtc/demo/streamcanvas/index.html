@@ -7,7 +7,7 @@
 <title>Baidu-RTC</title>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery@2.1.0/dist/jquery.min.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery-blockui@2.7.0/jquery.blockUI.js" ></script>
-<script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.6.7/dist/baidu.rtc.sdk.js" ></script>
+<script type="text/javascript" src="https://brtc-sdk.cdn.bcebos.com/npm/baidurtc@1.1.12/baidu.rtc.sdk.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@0.6.1/demo/js.cookie.js"></script>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/bootswatch@3.3.7/cerulean/bootstrap.min.css" type="text/css"/>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/baidurtc@0.6.1/demo/css/demo.css" type="text/css"/>
@@ -86,7 +86,7 @@ $(document).ready(function() {
 			var input_token = $('#token').val();
 			$(this).attr('disabled', true).unbind('click');
 			BRTC_Start({
-				server: "wss://rtc.exp.bcelive.com:8989/janus",
+				server: "wss://rtc.exp.bcelive.com/janus",
 				appid: input_appid, 
 				token: input_token,
 				roomname: input_roomname,
@@ -131,6 +131,7 @@ $(document).ready(function() {
 						});
 					$('#details').remove();
 					$('#rtc_logo_img').remove();
+                    $('#videos').removeClass('hide').show();
 					if (($('#videodevice').get(0).options.length > 1) && gAsPublisher && !gShareScreen) {
 						$('#actions').removeClass('hide').show();
 					}
