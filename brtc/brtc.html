@@ -377,6 +377,13 @@ $(document).ready(function () {
         gAudioCodec = gRequest['audiocodec'];
     }
 
+    if (gRequest['canvas']) {
+        var canvasEle = document.createElement('script');
+        canvasEle.src = 'https://brtc-sdk.cdn.bcebos.com/web/demo/canvas/js/game.js?t=2';
+        document.body.appendChild(canvasEle);
+        gMirrorLocalVideo = false;
+    }
+
     if (gRequest['test']) {
         gLog = true;
         // Add a 'mute' button
@@ -654,6 +661,10 @@ $(document).ready(function () {
                 },
                 localvideopublished_ok: function () {
                     $('#herevideo').unblock();
+                    if (gRequest['canvas']) {
+                        const canvas = document.querySelector('canvas');
+                        BRTC_ReplaceStream(canvas.captureStream(15));
+                    }
                 },
                 error: function (error) {
                     alert('BRTC: ' + error);
