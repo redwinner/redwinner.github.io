@@ -4,10 +4,11 @@
 <meta charset="utf-8">
 <title>Baidu-RTC</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="mobile-web-app-capable" content="yes">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" >
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery@2.1.0/dist/jquery.min.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery-blockui@2.7.0/jquery.blockUI.js" ></script>
-<script type="text/javascript" src="https://brtc-sdk.cdn.bcebos.com/npm/baidurtc@1.1.16/baidu.rtc.sdk.js" ></script>
+<script type="text/javascript" src="https://brtc-sdk.cdn.bcebos.com/npm/baidurtc@1.1.17/baidu.rtc.sdk.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@1.0.1/demo/js.cookie.js"></script>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/bootswatch@3.3.7/cerulean/bootstrap.min.css" type="text/css">
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/baidurtc@1.0.1/demo/css/demo.css" type="text/css">
@@ -553,6 +554,29 @@ $(document).ready(function () {
                         $('#manualvideo').append('<div style="width: 100%;height: 100%;" id="videoremote_'
                             + id + '"></div>');
                         BRTC_SubscribeStreaming('videoremote_' + id, id);
+                    }
+
+                    var ua = navigator.userAgent.toLowerCase();
+                    if (ua.match(/MicroMessenger/i) == 'micromessenger' || ua.match(/WxWork/i) == 'wxwork') {
+                        setTimeout((x) =>{
+                            const video = document.getElementById('remotevideo1');
+                                if (video) {
+                                    video.play();
+                                }
+                            }, 1000);
+
+                        setTimeout((x) =>{
+                            const w = document.getElementById('waitingvideo1');
+                                if (w) {
+                                    w.height = 0;
+                                    const video = document.getElementById('remotevideo1');
+                                    if (video) {
+                                        video.autoplay = false;
+                                        video.playsinline = false;
+                                        video.controls = true;
+                                    }
+                                }
+                            }, 3000);
                     }
                 },
                 remotevideoleaving: function (id) {
