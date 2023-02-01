@@ -655,6 +655,7 @@ $(document).ready(function () {
                     if (ignore_rooms_for_sendmsg.indexOf(input_roomname) < 0) {
                         $('#msg').removeClass('hide').show();
                         $('#sendmsg').removeClass('hide').show();
+                        $('#saveshot').removeClass('hide').show();
                     }
 
                     if (gUsingMessageAPI) {
@@ -854,6 +855,32 @@ $(document).ready(function () {
             });
         });
 });
+
+function getShot(video, x, y, width, height) {
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+
+    ctx.drawImage(video, x, y, width, height, 0, 0, width, height);
+
+    return canvas.toDataURL();
+}
+
+function SaveSnapShot() {
+    const a = document.createElement('a');
+    var len = document.getElementsByTagName('video').length;
+    var video = document.getElementsByTagName('video')[len - 1];
+    a.style.display = 'none';
+    a.href = getShot(video, 0, 0, video.videoWidth, video.videoHeight);
+    a.download = 'Snapshot.png';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+        document.body.removeChild(a);
+        }, 1000);
+}
+
 </script>
 
 <div class="container" id="login">
@@ -909,6 +936,7 @@ $(document).ready(function () {
         <div style="width: 70%;height: 50px;" class="rtc-font-color" id="remotedata"></div>
         <textarea class="hide" name="msg" id="msg" style="background-color:White;border-color:#C0C0FF;border-width:1px;border-style:Solid;height:50px;width:1100px;">众里寻他千百度~</textarea><br>
         <button class="hide" type="button" onclick="BRTC_SendMessageToUser(document.getElementById('msg').value)" id="sendmsg">发送消息</button>
+        <hr><button class="hide" type="button" onclick="SaveSnapShot()" id="saveshot">视频截图</button>
         <div style="width: 70%;height: 500px;" id="therevideo2" title="双击全屏"></div>
         <div style="width: 70%;height: 500px;" id="therevideo3" title="双击全屏"></div>
         <div style="width: 70%;height: 500px;" id="therevideo4" title="双击全屏"></div>
