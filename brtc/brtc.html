@@ -8,7 +8,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" >
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery@2.1.0/dist/jquery.min.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery-blockui@2.7.0/jquery.blockUI.js" ></script>
-<script type="text/javascript" src="https://brtc-sdk.cdn.bcebos.com/npm/baidurtc@1.1.19/baidu.rtc.sdk.js" ></script>
+<script type="text/javascript" src="https://brtc-sdk.cdn.bcebos.com/npm/baidurtc@1.2.1/baidu.rtc.sdk.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@1.0.1/demo/js.cookie.js"></script>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/bootswatch@3.3.7/cerulean/bootstrap.min.css" type="text/css">
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/baidurtc@1.0.1/demo/css/demo.css" type="text/css">
@@ -78,6 +78,7 @@ var gVideoProfile = 'hires';
 var gScreenProfile = 'raw';
 var gWaitPermissionTimeOutMs = 30000;
 var gCandidateIP = null;
+var gCandidatePort = null;
 var gMediaServerIP = null;
 var gShowSpinner = true;
 var gUserEvent = true;
@@ -119,6 +120,67 @@ $(document).ready(function () {
 
     var input_userid = '100' + Math.floor(Math.random() * 1000000).toString();
     var rtmp_server = '';
+
+    if (gRequest['a']) {
+        gRequest['appid'] = gRequest['a'];
+    }
+    if (gRequest['ac']) {
+        gRequest['audiocodec'] = gRequest['ac'];
+    }
+    if (gRequest['b']) {
+        gRequest['bitrate'] = gRequest['b'];
+    }
+    if (gRequest['c']) {
+        gRequest['candidateip'] = gRequest['c'];
+    }
+    if (gRequest['cp']) {
+        gRequest['candidateport'] = gRequest['cp'];
+    }
+    if (gRequest['d']) {
+        gRequest['displayname'] = gRequest['d'];
+    }
+    if (gRequest['r']) {
+        gRequest['roomname'] = gRequest['r'];
+    }
+    if (gRequest['u']) {
+        gRequest['userid'] = gRequest['u'];
+    }
+    if (gRequest['vc']) {
+        gRequest['videocodec'] = gRequest['vc'];
+    }
+    if (gRequest['vp']) {
+        gRequest['videoprofile'] = gRequest['vp'];
+    }
+    if (gRequest['l']) {
+        gRequest['listener_only'] = gRequest['l'];
+    }
+    if (gRequest['mi']) {
+        gRequest['mediaserverip'] = gRequest['mi'];
+    }
+    if (gRequest['mn']) {
+        gRequest['mediaserverdn'] = gRequest['mn'];
+    }
+    if (gRequest['na']) {
+        gRequest['no_audio'] = gRequest['na'];
+    }
+    if (gRequest['nv']) {
+        gRequest['no_video'] = gRequest['nv'];
+    }
+    if (gRequest['ns']) {
+        gRequest['no_autosubscribe'] = gRequest['ns'];
+    }
+    if (gRequest['np']) {
+        gRequest['no_autopublish'] = gRequest['np'];
+    }
+    if (gRequest['s']) {
+        gRequest['brtcserver'] = gRequest['s'];
+    }
+    if (gRequest['ss']) {
+        gRequest['sharescreen'] = gRequest['ss'];
+    }
+    if (gRequest['t']) {
+        gRequest['token'] = gRequest['t'];
+    }
 
     if (gRequest['roomname']) {
         $('#roomname').attr('value', gRequest['roomname']);
@@ -247,6 +309,9 @@ $(document).ready(function () {
 
     if (gRequest['candidateip']) {
         gCandidateIP = gRequest['candidateip'];
+    }
+    if (gRequest['candidateport']) {
+        gCandidatePort = gRequest['candidateport'];
     }
 
     if (gRequest['mediaserverip']) {
@@ -503,6 +568,7 @@ $(document).ready(function () {
                 reportmonitordata: gReportMonitorData,
                 reportenv: gReportEnv,
                 candidateip: gCandidateIP,
+                candidateport: gCandidatePort,
                 mediaserverip: gMediaServerIP,
                 videoprofile: gVideoProfile,
                 // videoprofile: 'lowres','stdres','hires','fhdres','4kres','480x480@15'
