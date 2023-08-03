@@ -8,7 +8,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" >
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery@2.1.0/dist/jquery.min.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery-blockui@2.7.0/jquery.blockUI.js" ></script>
-<script type="text/javascript" src="https://brtc-sdk.cdn.bcebos.com/npm/baidurtc@1.2.1/baidu.rtc.sdk.js" ></script>
+<script type="text/javascript" src="https://brtc-sdk.cdn.bcebos.com/npm/baidurtc@1.2.5/baidu.rtc.sdk.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@1.0.1/demo/js.cookie.js"></script>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/bootswatch@3.3.7/cerulean/bootstrap.min.css" type="text/css">
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/baidurtc@1.0.1/demo/css/demo.css" type="text/css">
@@ -35,6 +35,12 @@
     font-size: 20px;
     color: #1A1C47;
 }
+.gotoBaidu{height:20px;top:0;}
+.gotobd{position:absolute;width:1170px;top:0;right:auto;bottom:0;left:50%;margin-left:-595px;text-align:right;line-height:20px;font-size:14px;padding-right:20px;}
+.gotobd a{color:#000; float: right; margin-left: 15px;}
+.gotobd a.subxm{color:#505050;}
+table,table tr th, table tr td { border:1px solid #0094ff; }
+table { width: 800px; min-height: 25px; line-height: 25px; text-align: left; border-collapse: collapse;}
 </style>
 </head>
 <body>
@@ -733,8 +739,9 @@ $(document).ready(function () {
                             var r = BRTC_GetRemoteAudioLevels();
 
                             r.forEach(e => {
+                                console.log('BRTC_GetRemoteAudioLevels: ' + JSON.stringify(e));
                                 if (e.volume === 0) {
-                                    console.error('GetRemoteAudioLevels volume is 0: ' + e);
+                                    console.error('GetRemoteAudioLevels volume is 0: ' + JSON.stringify(e));
                                     console.error(e);
                                 }
                             });
@@ -796,6 +803,9 @@ $(document).ready(function () {
                 onrecording: function (e) {
                     console.log('onrecording: status: ' + e.status);
                 },
+                onmsgdelayinfo: function (e) {
+                    console.log('onmsgdelayinfo: id: ' + e.id + ', tag: ' + e.data + ' , delay: ' + e.delayms + 'ms');
+                },
             });
             Cookies.set('roomname_at_aapid_page', input_roomname);
             Cookies.set('appid', input_appid);
@@ -815,7 +825,7 @@ $(document).ready(function () {
                 }
 
                 for (let i = 0; i < devices.length; i++) {
-                    sel.options.add(new Option(devices[i].label, devices[i].deviceId));
+                    sel.options.add(new Option(devices[i].label || 'camera ' + (i + 1), devices[i].deviceId));
                     if (devices[i].label.includes('FaceTime')) {
                         defaultDeviceID = devices[i].deviceId;
                         sel.options.selectedIndex = i;
@@ -840,7 +850,7 @@ $(document).ready(function () {
                 }
 
                 for (let i = 0; i < devices.length; i++) {
-                    sel.options.add(new Option(devices[i].label, devices[i].deviceId));
+                    sel.options.add(new Option(devices[i].label || 'microphone ' + (i + 1), devices[i].deviceId));
                 }
 
                 $('#audiodevice').change(function () {
@@ -860,7 +870,7 @@ $(document).ready(function () {
                 }
 
                 for (let i = 0; i < devices.length; i++) {
-                    sel.options.add(new Option(devices[i].label, devices[i].deviceId));
+                    sel.options.add(new Option(devices[i].label || 'speaker ' + (i + 1), devices[i].deviceId));
                 }
 
                 $('#audiooutputdevice').change(function () {
@@ -885,7 +895,7 @@ $(document).ready(function () {
             });
     }
 
-    if (gAsPublisher) {
+    if (gAsPublisher && (gUsingVideo || gUsingAudio)) {
         setTimeout(function () {
             loadDevice();
         }, 300);
@@ -949,6 +959,12 @@ function SaveSnapShot() {
 
 </script>
 
+<div class="gotoBaidu">
+    <div class="gotobd">
+        <a class="dl_subxm" href="#wiki">Wiki</a>&nbsp;&nbsp;
+    </div>
+</div>
+
 <div class="container" id="login">
         <div class="col-md-12" style="text-align: center">
             <img src="https://code.bdstatic.com/npm/baidurtc@1.0.1/demo/img/rtc_logo.png" id="rtc_logo_img">
@@ -1011,6 +1027,273 @@ function SaveSnapShot() {
 <div class="hide" id="auto">
     <div class="rtc-title-font-color" id="continueplaying" style="width:500px; text-align:center">拉流播放时请不要刷新页面，点击[继续播放]-></div>
 </div>
+
+<a name="wiki">Demo 参数说明</a>
+<p>
+例子: https://brtc.cdn.bcebos.com/brtc.html?r=8888
+</p>
+
+<table>
+    <tr>
+        <td>请求参数名</td>
+        <td>缩写</td>
+        <td>含义</td>
+        <td>默认值</td>
+        <td>示例</td>
+    </tr>
+    <tr>
+        <td>roomname</td>
+        <td>r</td>
+        <td>房间名</td>
+        <td>&#39;8888&#39;</td>
+        <td>r=8888</td>
+    </tr>
+    <tr>
+        <td>appid</td>
+        <td>a</td>
+        <td>AppID 值</td>
+        <td>&#39;&#39;</td>
+        <td>a=appid</td>
+    </tr>
+    <tr>
+        <td>userid</td>
+        <td>u</td>
+        <td>用户ID号</td>
+        <td>随机值</td>
+        <td>u=10099</td>
+    </tr>
+    <tr>
+        <td>displayname</td>
+        <td>d</td>
+        <td>用户显示名称</td>
+        <td></td>
+        <td>d=Tom</td>
+    </tr>
+    <tr>
+        <td>token</td>
+        <td>t</td>
+        <td>token串</td>
+        <td>对于开启了CA的appid 需要token</td>
+        <td>t=no_token</td>
+    </tr>
+    <tr>
+        <td>listener_only</td>
+        <td>l</td>
+        <td>是否只是听众</td>
+        <td>不是听众</td>
+        <td>l=1</td>
+    </tr>
+    <tr>
+        <td>sharescreen</td>
+        <td>ss</td>
+        <td>是否屏幕分享</td>
+        <td></td>
+        <td>ss=1</td>
+    </tr>
+    <tr>
+        <td>brtcserver</td>
+        <td>s</td>
+        <td>BRTC服务器地址</td>
+        <td></td>
+        <td>s=wss://rtc.exp.bcelive.com/janus</td>
+    </tr>
+    <tr>
+        <td>rtmpserver</td>
+        <td>-</td>
+        <td>RTMP转推服务器地址</td>
+        <td>&#39;&#39;</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>rtmpmix</td>
+        <td>-</td>
+        <td>RTMP转推是否混流</td>
+        <td>true</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>rtmpmixtemplate</td>
+        <td>-</td>
+        <td>RTMP转推混流模版</td>
+        <td>无</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>rtmpmixlayoutindex</td>
+        <td>-</td>
+        <td>RTMP转推混流模版布局位置</td>
+        <td>无</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>audiocodec</td>
+        <td>ac</td>
+        <td>音频编码名称</td>
+        <td>opus</td>
+        <td>ac=opus</td>
+    </tr>
+    <tr>
+        <td>videocodec</td>
+        <td>vc</td>
+        <td>视频编码名称</td>
+        <td>h264</td>
+        <td>vc=h264</td>
+    </tr>
+    <tr>
+        <td>no_autosubscribe</td>
+        <td>ns</td>
+        <td>不自动拉流</td>
+        <td></td>
+        <td>ns=1</td>
+    </tr>
+    <tr>
+        <td>no_autopublish</td>
+        <td>np</td>
+        <td>不自动推流</td>
+        <td></td>
+        <td>np=1</td>
+    </tr>
+    <tr>
+        <td>no_video</td>
+        <td>nv</td>
+        <td>推流不使用视频</td>
+        <td></td>
+        <td>nv=1</td>
+    </tr>
+    <tr>
+        <td>no_audio</td>
+        <td>na</td>
+        <td>推流不使用音频</td>
+        <td></td>
+        <td>na=1</td>
+    </tr>
+    <tr>
+        <td>no_receivingvideo</td>
+        <td>-</td>
+        <td>不接收视频</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>no_receivingaudio</td>
+        <td>-</td>
+        <td>不接收音频</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>no_showvideobps</td>
+        <td>-</td>
+        <td>不显示码率</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>videoprofile</td>
+        <td>vp</td>
+        <td>视频配置</td>
+        <td></td>
+        <td>vp=240x240@15</td>
+    </tr>
+    <tr>
+        <td>screenprofile</td>
+        <td>-</td>
+        <td>屏幕共享视频配置</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>candidateip</td>
+        <td>c</td>
+        <td>指定候选地址IP</td>
+        <td>用于专网NAT转发</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>candidateport</td>
+        <td>cp</td>
+        <td>指定候选地址端口号</td>
+        <td>用于专网NAT转发</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>mediaserverip</td>
+        <td>mi</td>
+        <td>指定媒体服务器IP</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>mediaserverdn</td>
+        <td>mn</td>
+        <td>指定媒体服务器DNS</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>no_showspinner</td>
+        <td>-</td>
+        <td>不显示视频加载进度</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>bitrate</td>
+        <td>b</td>
+        <td>设置视频码率</td>
+        <td></td>
+        <td>b=300</td>
+    </tr>
+    <tr>
+        <td>audiobitrate</td>
+        <td>-</td>
+        <td>设置音频码率</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>textroom</td>
+        <td>-</td>
+        <td>文本聊天模式</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>no_mirrorlocalvideo</td>
+        <td>-</td>
+        <td>不镜像本地视频</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>reportmonitordata</td>
+        <td>-</td>
+        <td>上报监控数据</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>dynamicvideoview</td>
+        <td>-</td>
+        <td>动态创建videoview</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>log</td>
+        <td>-</td>
+        <td>打开log</td>
+        <td></td>
+        <td>log=1</td>
+    </tr>
+    <tr>
+        <td>test</td>
+        <td>-</td>
+        <td>打开测试开关, 会加载vConsole, 用于手机调试等环境</td>
+        <td></td>
+        <td>test=1</td>
+    </tr>
+</table>
 
 </body>
 </html>
