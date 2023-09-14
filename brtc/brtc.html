@@ -4,11 +4,14 @@
 <meta charset="utf-8">
 <title>Baidu-RTC</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="mobile-web-app-capable" content="yes">
+<!-- <meta name="mobile-web-app-capable" content="yes"> -->
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" >
+<link rel="apple-touch-icon" sizes="192x192" href="https://brtc-sdk.cdn.bcebos.com/logo/rtc-logo-192x192.png">
+<link rel="shortcut" href="https://brtc-sdk.cdn.bcebos.com/logo/rtc-logo-192x192.png">
+<!-- <link rel="apple-touch-icon-precomposed" href="https://brtc-sdk.cdn.bcebos.com/logo/rtc-logo.png"> -->
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery@2.1.0/dist/jquery.min.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery-blockui@2.7.0/jquery.blockUI.js" ></script>
-<script type="text/javascript" src="https://brtc-sdk.cdn.bcebos.com/npm/baidurtc@1.2.7/baidu.rtc.sdk.js" ></script>
+<script type="text/javascript" src="https://brtc-sdk.cdn.bcebos.com/npm/baidurtc@1.2.9/baidu.rtc.sdk.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@1.0.1/demo/js.cookie.js"></script>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/bootswatch@3.3.7/cerulean/bootstrap.min.css" type="text/css">
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/baidurtc@1.0.1/demo/css/demo.css" type="text/css">
@@ -654,6 +657,15 @@ $(document).ready(function () {
                 },
                 remotevideoleaving: function (id) {
                     console.log('remotevideoleaving, feedid:' + id);
+                    let sel = document.getElementById('feedid');
+
+                    for (const e in sel.options) {
+                        if (sel.options[e].value == id) {
+                            sel.options.remove(e);
+                            return;
+                        }
+                    }
+
                     if (!gAutoSubScribe && gDynamicRemoteVideoView) {
                         $('#videoremote_' + id).remove();
                     }
