@@ -1,17 +1,18 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 <head>
 <meta charset="utf-8">
 <title>Baidu-RTC</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- <meta name="mobile-web-app-capable" content="yes"> -->
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" >
+<meta name="theme-color" content="#4D66FE" />
 <link rel="apple-touch-icon" sizes="192x192" href="https://brtc-sdk.cdn.bcebos.com/logo/rtc-logo-192x192.png">
 <link rel="shortcut" href="https://brtc-sdk.cdn.bcebos.com/logo/rtc-logo-192x192.png">
 <!-- <link rel="apple-touch-icon-precomposed" href="https://brtc-sdk.cdn.bcebos.com/logo/rtc-logo.png"> -->
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery@2.1.0/dist/jquery.min.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery-blockui@2.7.0/jquery.blockUI.js" ></script>
-<script type="text/javascript" src="https://brtc-sdk.cdn.bcebos.com/npm/baidurtc@1.2.9/baidu.rtc.sdk.js" ></script>
+<script type="text/javascript" src="https://brtc-sdk.cdn.bcebos.com/npm/baidurtc@1.2.13/baidu.rtc.sdk.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@1.0.1/demo/js.cookie.js"></script>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/bootswatch@3.3.7/cerulean/bootstrap.min.css" type="text/css">
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/baidurtc@1.0.1/demo/css/demo.css" type="text/css">
@@ -93,6 +94,7 @@ var gShowSpinner = true;
 var gUserEvent = true;
 var gSessionEvent = true;
 var gAutologin = false;
+var gAutoRelogin = false;
 // 'playing'
 var gState  = 'init';
 var gBitRate = 1500;
@@ -114,9 +116,10 @@ var gAudioCodec = ''; // 'opus', 'pcmu', 'pcma', 'g722', 'isac16', 'isac32'
 var gMuted = false;
 var gVideoMuted = false;
 var gPublished = true;
+var last_sub_feedid = 0;
 
 $(document).ready(function () {
-    $('#roomname').attr('value', Cookies.get('roomname_at_aapid_page'));
+    $('#roomname').attr('value', Cookies.get('roomname'));
     $('#appid').attr('value', Cookies.get('appid'));
     $('#userid').attr('value', Cookies.get('userid'));
     $('#token').attr('value', Cookies.get('token'));
@@ -190,6 +193,9 @@ $(document).ready(function () {
     if (gRequest['t']) {
         gRequest['token'] = gRequest['t'];
     }
+    if (gRequest['ar']) {
+        gRequest['autorelogin'] = gRequest['ar'];
+    }
 
     if (gRequest['roomname']) {
         $('#roomname').attr('value', gRequest['roomname']);
@@ -262,7 +268,14 @@ $(document).ready(function () {
         $('#feedid').change(function () {
             var myfeedid = parseInt($('#feedid').val(), 10);
             if (myfeedid !== 999999999) {
+                if (last_sub_feedid != 0){
+                    var that_sub_feedid = last_sub_feedid;
+                    setTimeout((x) =>{
+                            BRTC_StopSubscribeStreaming(that_sub_feedid);
+                        }, 500);
+                }
                 BRTC_SubscribeStreaming('manualvideo', myfeedid);
+                last_sub_feedid = myfeedid;
             }
         });
     }
@@ -373,6 +386,10 @@ $(document).ready(function () {
 
     if (gRequest['autologin']) {
         gAutologin = true;
+    }
+
+    if (gRequest['autorelogin']) {
+        gAutoRelogin = true;
     }
 
     if (gRequest['bitrate']) {
@@ -521,8 +538,9 @@ $(document).ready(function () {
         $('#mpimg').removeClass('hide').show();
         $('#mptitle').removeClass('hide').show();
     });
+    $('#start').click(loginBRTC);
 
-    $('#start').click(function () {
+    function loginBRTC() {
             var input_roomname = $('#roomname').val();
             var input_appid = $('#appid').val();
             var input_token = $('#token').val();
@@ -694,8 +712,9 @@ $(document).ready(function () {
                             $('#start').attr('disabled', true);
                             Cookies.set('state', 'init');
                             BRTC_Stop();
+                            window.location.reload();
                         });
-                    $('#details').remove();
+                    $('#details').hide();
                     $('#rtc_logo_img').remove();
                     $('#videos').removeClass('hide').show();
                     if (($('#videodevice').get(0).options.length > 1) && gAsPublisher && !gShareScreen) {
@@ -722,25 +741,9 @@ $(document).ready(function () {
                         Cookies.set('state', 'playing');
                     }
 
-                    var ignore_rooms_for_sendmsg = [
-                        '7a5f1d54-e482-4e8e-8610-605d296fc371',
-                        '3021725c-fdd7-426d-aee0-9f84b7e6336f',
-                        '0cc3b3cb-d07e-4cdf-9ee3-30c5f2b6e361',
-                        'b1092ce6-db7c-4bee-8b9a-28da5021d0a0',
-                        'ee2e3738-45c5-4027-a6ae-39dea09999f7',
-                        '65a5aec3-6450-4747-8484-97028f9cc865',
-                        'b0b3d4dd-467d-454f-93d9-678746a7570c',
-                        '703cda41-d6a2-4934-a7de-d38b99ee137b',
-                        'f2db08ed-d90a-40d7-9adf-d0ae1d598fa4',
-                        '2df29610-0fb8-4bbe-877c-51b4fc3515f6',
-                        'f5eba0ec-674a-4a21-bff5-e0441b451759',
-                    ];
-
-                    if (ignore_rooms_for_sendmsg.indexOf(input_roomname) < 0) {
-                        $('#msg').removeClass('hide').show();
-                        $('#sendmsg').removeClass('hide').show();
-                        $('#saveshot').removeClass('hide').show();
-                    }
+                    $('#msg').removeClass('hide').show();
+                    $('#sendmsg').removeClass('hide').show();
+                    $('#saveshot').removeClass('hide').show();
 
                     if (gUsingMessageAPI) {
                         BRTC_SetUserAttribute('{name:"red",tel:"123456789"}');
@@ -778,12 +781,24 @@ $(document).ready(function () {
                     }
                 },
                 error: function (error) {
-                    alert('BRTC: ' + error);
-                    window.location.reload();
-                    $('#start').removeAttr('disabled');
+                    console.log('BRTC: ' + error);
+
+                    if (!gAutoRelogin) {
+                        alert('BRTC: ' + error);
+                        window.location.reload();
+                        $('#start').removeAttr('disabled');
+                    } else {
+                        setTimeout(function () {
+                            console.log('Timer auto relogin: ');
+                            loginBRTC();
+                            }, 3000);
+                        BRTC_Stop();
+                    }
                 },
                 destroyed: function (error) {
-                    window.location.reload();
+                    if (!gAutoRelogin) {
+                        window.location.reload();
+                    }
                 },
                 onlocalstream: function (stream, name) {
                     // local stream for display sonic wave
@@ -819,14 +834,14 @@ $(document).ready(function () {
                     console.log('onmsgdelayinfo: id: ' + e.id + ', tag: ' + e.data + ' , delay: ' + e.delayms + 'ms');
                 },
             });
-            Cookies.set('roomname_at_aapid_page', input_roomname);
+            Cookies.set('roomname', input_roomname);
             Cookies.set('appid', input_appid);
             Cookies.set('userid', input_userid);
             Cookies.set('token', input_token);
             Cookies.set('brtcserver', input_brtcserver);
             Cookies.set('rtmpserver', input_rtmpserver);
             Cookies.set('rtmpmixtemplate', input_rtmpmixtemplate);
-        });
+        }
     function loadDevice() {
         let callback = {
             success: function (devices) {
@@ -1288,6 +1303,20 @@ function SaveSnapShot() {
         <td>dynamicvideoview</td>
         <td>-</td>
         <td>动态创建videoview</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>autorelogin</td>
+        <td>ar</td>
+        <td>网络断开时自动重连</td>
+        <td></td>
+        <td>ar=1</td>
+    </tr>
+    <tr>
+        <td>autoplaymuted</td>
+        <td>-</td>
+        <td>静音播放视频</td>
         <td></td>
         <td></td>
     </tr>
