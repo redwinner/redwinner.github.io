@@ -12,7 +12,7 @@
 <!-- <link rel="apple-touch-icon-precomposed" href="https://brtc-sdk.cdn.bcebos.com/logo/rtc-logo.png"> -->
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery@2.1.0/dist/jquery.min.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery-blockui@2.7.0/jquery.blockUI.js" ></script>
-<script type="text/javascript" src="https://brtc-sdk.cdn.bcebos.com/npm/baidurtc@1.2.15/baidu.rtc.sdk.js" ></script>
+<script type="text/javascript" src="https://brtc-sdk.cdn.bcebos.com/npm/baidurtc@1.2.16/baidu.rtc.sdk.js" ></script>
 <script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@1.0.1/demo/js.cookie.js"></script>
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/bootswatch@3.3.7/cerulean/bootstrap.min.css" type="text/css">
 <link rel="stylesheet" href="https://code.bdstatic.com/npm/baidurtc@1.0.1/demo/css/demo.css" type="text/css">
@@ -156,6 +156,7 @@ var gMediaServerIP = null;
 var gShowSpinner = true;
 var gUserEvent = true;
 var gSessionEvent = true;
+var gRemoteMediaState = false;
 var gAutologin = false;
 var gAutoRelogin = false;
 // 'playing'
@@ -259,6 +260,9 @@ $(document).ready(function () {
     }
     if (gRequest['ar']) {
         gRequest['autorelogin'] = gRequest['ar'];
+    }
+    if (gRequest['rms']) {
+        gRemoteMediaState = true;
     }
 
     if (gRequest['roomname']) {
@@ -750,6 +754,13 @@ $(document).ready(function () {
                             }, 3000);
                     }
                 },
+                remotevideoconnected_state: function(id, on) {
+                    console.log('remotevideoconnected_state, feedid:' + id + ' connected:' + on);
+                },
+                usingremotemediastate: gRemoteMediaState,
+                remotemediastating: function(id, medium, on) {
+                    console.log('receiving media id:' + id + ' medium:' + medium + ' :' + on);
+                },
                 remotevideoleaving: function (id) {
                     console.log('remotevideoleaving, feedid:' + id);
                     let sel = document.getElementById('feedid');
@@ -849,6 +860,9 @@ $(document).ready(function () {
                             color: 'white'
                         }
                     });
+                },
+                localvideoconnected_state: function (on) {
+                    console.log('localvideoconnected_state, connected:' + on);
                 },
                 localvideopublished_ok: function () {
                     $('#herevideo').unblock();
